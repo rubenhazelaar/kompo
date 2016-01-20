@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Router example - Kompo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
+    <style>
+        .content    {
+            padding:1em;
+            background-color: rgba(150,150,150, 0.6);
+        }
+
+        nav {
+            display: flex;
+            padding:0 0.25vw;
+        }
+
+        nav > * {
+            flex:1;
+            text-align: center;
+            background: yellow;
+            padding:0.5em;
+            margin:0.5vw 0.25vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        a {
+            text-decoration: none;
+            color:black;
+        }
+
+        a:hover {
+            background-color: orange;
+        }
+
+        a.active {
+            background-color: cyan;
+        }
+    </style>
+</head>
+<body>
+<script src="dist/router.js"></script>
+</body>
+</html>

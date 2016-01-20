@@ -3,6 +3,10 @@
 Kompo is a react js like library which tries to stay simple as possible. No virtual DOM or JSX. 
 Kompo loves the DOM & makes it possible to build interfaces through components.
 
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/rubenhazelaar/kompo/master/LICENSE)
+[![Travis](https://img.shields.io/travis/rust-lang/rust.svg?style=flat-square)]()
+
+
 It's lightweight (6KB minified & gzipped), easy to understand & use and has no dependencies. The only buildtool you'll need is a bundler 
 like browserify or webpack.
  

@@ -2,13 +2,19 @@
   "name": "kompo",
   "version": "0.2.3",
   "description": "Kompo is a react like library which tries to stay simple as possible. No virtual DOM or JSX. Kompo loves the DOM.",
-  "main": "./dist/kompo.js",
+  "main": "./lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rubenhazelaar/kompo.git"
+  },
+  "homepage": "https://github.com/rubenhazelaar/kompo/",
+  "bugs": "https://github.com/rubenhazelaar/kompo/issues",
   "scripts": {
     "commit": "git-cz",
     "test": "./node_modules/.bin/karma start --single-run",
-    "testAll": "./node_modules/.bin/karma start",
-    "watch": "./node_modules/.bin/webpack -w",
-    "build": "./node_modules/.bin/webpack",
+    "build": "./node_modules/.bin/babel src -d lib",
+    "examples-build": "./node_modules/.bin/webpack",
+    "examples-watch": "./node_modules/.bin/webpack -w",
     "lint": "./node_modules/.bin/eslint src/**"
   },
   "keywords": [
@@ -22,6 +28,7 @@
   "author": "Ruben Hazelaar <ruben.hazelaar@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "babel-cli": "6.4.5",
     "babel-core": "6.4.0",
     "babel-loader": "6.2.1",
     "babel-plugin-transform-es2015-classes": "6.4.5",

@@ -54,23 +54,23 @@
 	
 	var _create2 = _interopRequireDefault(_create);
 	
-	var _extension = __webpack_require__(10);
+	var _extension = __webpack_require__(9);
 	
 	var _extension2 = _interopRequireDefault(_extension);
 	
-	var _Router = __webpack_require__(12);
+	var _Router = __webpack_require__(14);
 	
 	var _Router2 = _interopRequireDefault(_Router);
 	
-	var _Link = __webpack_require__(13);
+	var _Link = __webpack_require__(15);
 	
 	var _Link2 = _interopRequireDefault(_Link);
 	
-	var _Leaf = __webpack_require__(20);
+	var _Leaf = __webpack_require__(16);
 	
 	var _Leaf2 = _interopRequireDefault(_Leaf);
 	
-	var _Branch = __webpack_require__(21);
+	var _Branch = __webpack_require__(17);
 	
 	var _Branch2 = _interopRequireDefault(_Branch);
 	
@@ -910,8 +910,7 @@
 	}();
 
 /***/ },
-/* 9 */,
-/* 10 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -921,7 +920,7 @@
 	});
 	exports.default = extension;
 	
-	var _capitalize = __webpack_require__(11);
+	var _capitalize = __webpack_require__(10);
 	
 	var _capitalize2 = _interopRequireDefault(_capitalize);
 	
@@ -1401,7 +1400,7 @@
 	}
 
 /***/ },
-/* 11 */
+/* 10 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1423,7 +1422,10 @@
 	}
 
 /***/ },
-/* 12 */
+/* 11 */,
+/* 12 */,
+/* 13 */,
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1784,7 +1786,7 @@
 	}(Route);
 
 /***/ },
-/* 13 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1913,13 +1915,7 @@
 	};
 
 /***/ },
-/* 14 */,
-/* 15 */,
-/* 16 */,
-/* 17 */,
-/* 18 */,
-/* 19 */,
-/* 20 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1987,7 +1983,7 @@
 	};
 
 /***/ },
-/* 21 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';

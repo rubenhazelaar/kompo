@@ -25,10 +25,14 @@ npm install --save kompo
 npm run build
 ```
 
-All sources come prebuilt, so no initial build necessary. However if you make some changes, note there is also:
+The examples come prebuilt, however if you do need to (re)build use one of the following:
 
 ```bash
-npm run watch
+npm run examples-build
+```
+
+```bash
+npm run examples-watch
 ```
 
 ## Test
@@ -45,20 +49,20 @@ The following example covers the basic functionalities of Kompo:
   
 ```javascript 
 // Component and content creation classes and functions
-import Component from '../../../src/component/Component.js';
-import c, { createText } from '../../../src/dom/create.js';
-import addExtensions from '../../../src/dom/extension.js';
+import Component from 'kompo';
+import { create, createText } from 'kompo';
+import { addExtensions } from 'kompo';
 addExtensions(); // Initialize without prefix
 
 // Setup root component
 class App extends Component {
     create() {
         // Create elements
-        const root = c(),
-            h1 = c('h1', {
+        const root = create(),
+            h1 = create('h1', {
                 id: 'Primary heading' // Set attributes through an object
             }),
-            input = c('input');
+            input = create('input');
 
         // Event listener, trigger update on keyup
         this.on(input, 'keyup', (e, state) => {
@@ -232,7 +236,7 @@ Every application should be able to trigger an action and react accordingly. To 
  start with the last one:
  
 ```javascript
-import reaction from 'kompo'
+import { reaction } from 'kompo'
 
 // In a create function of some component ...
 
@@ -292,7 +296,7 @@ HTML (templates) or JSX would be. Although the extension for the DOM API tries t
   however you can also just use normal DOM API functions such as `appendChild`. 
  
 ```javascript
-import create from 'kompo';
+import { create } from 'kompo';
 
 // In a create function of some component ...
 
@@ -339,7 +343,7 @@ at the desired location. This enables the developer to determine (a part of) the
 Consider the following example:
 
 ```javascript
-import create from 'kompo';
+import { create } from 'kompo';
 import MyNestableComponent from 'your/code/MyNestableComponent.js';
 
 // In a create function of some component ...

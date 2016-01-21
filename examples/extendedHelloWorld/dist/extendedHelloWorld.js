@@ -54,7 +54,7 @@
 	
 	var _create2 = _interopRequireDefault(_create);
 	
-	var _extension = __webpack_require__(10);
+	var _extension = __webpack_require__(9);
 	
 	var _extension2 = _interopRequireDefault(_extension);
 	
@@ -862,8 +862,7 @@
 	}();
 
 /***/ },
-/* 9 */,
-/* 10 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -873,7 +872,7 @@
 	});
 	exports.default = extension;
 	
-	var _capitalize = __webpack_require__(11);
+	var _capitalize = __webpack_require__(10);
 	
 	var _capitalize2 = _interopRequireDefault(_capitalize);
 	
@@ -1353,7 +1352,7 @@
 	}
 
 /***/ },
-/* 11 */
+/* 10 */
 /***/ function(module, exports) {
 
 	"use strict";

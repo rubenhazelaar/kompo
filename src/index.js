@@ -12,11 +12,12 @@ import action, { Do } from './action/action.js';
 import AsyncAction from './action/AsyncAction.js';
 import reaction from './action/reaction.js';
 
-export {
+module.exports = {
     Component,
     Collection,
     create, createFragment, createText,
     addExtension,
+    replace,
     Router, Route, IndexRoute,
     Link,
     debounce,

@@ -5,7 +5,8 @@ Kompo loves the DOM & makes it possible to build interfaces through components.
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/rubenhazelaar/kompo/master/LICENSE)
 [![Travis](https://img.shields.io/travis/rust-lang/rust.svg?style=flat-square)]()
-[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square)](http://commitizen.github.io/cz-cli/)
+[![David](https://david-dm.org/rubenhazelaar/kompo.svg?style=flat-square)](https://david-dm.org/)
 
 It's lightweight (6KB minified & gzipped), easy to understand & use. The only build tool you'll need is a bundler 
 like browserify or webpack.

@@ -1,5 +1,6 @@
 import merge from '../utils/merge.js';
 import isFunction from '../utils/isFunction.js';
+import Promise from '../utils/promise.js';
 
 /**
  * Simple wrapper for native

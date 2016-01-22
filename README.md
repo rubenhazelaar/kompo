@@ -7,7 +7,7 @@ Kompo loves the DOM & makes it possible to build interfaces through components.
 [![Travis](https://img.shields.io/travis/rust-lang/rust.svg?style=flat-square)]()
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
-It's lightweight (6KB minified & gzipped), easy to understand & use and has no dependencies. The only build tool you'll need is a bundler 
+It's lightweight (6KB minified & gzipped), easy to understand & use. The only build tool you'll need is a bundler 
 like browserify or webpack.
  
 Kompo's core concept is that of components. Together with a simple Router (inspired by Ember & React routers)

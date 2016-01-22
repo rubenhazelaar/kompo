@@ -55,6 +55,9 @@
     "sinon": "1.17.2",
     "webpack": "1.12.11"
   },
+  "dependencies": {
+    "promise": "7.1.1"
+  },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"

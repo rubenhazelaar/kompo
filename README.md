@@ -1,13 +1,13 @@
 # Kompo
 
-Kompo is a react js like library which tries to stay simple as possible. No virtual DOM or JSX. 
+Kompo is a react js like library which tries to stay as simple as possible. No virtual DOM or JSX. 
 Kompo loves the DOM & makes it possible to build interfaces through components.
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/rubenhazelaar/kompo/master/LICENSE)
 [![Travis](https://img.shields.io/travis/rust-lang/rust.svg?style=flat-square)]()
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
-
-It's lightweight (6KB minified & gzipped), easy to understand & use and has no dependencies. The only buildtool you'll need is a bundler 
+It's lightweight (6KB minified & gzipped), easy to understand & use and has no dependencies. The only build tool you'll need is a bundler 
 like browserify or webpack.
  
 Kompo's core concept is that of components. Together with a simple Router (inspired by Ember & React routers)
@@ -41,7 +41,7 @@ npm run examples-watch
 npm test
 ```
 
-Please note: testing is still a work-in-progress and you can help out! Please check the 'Contribute' section below.
+Please note: testing is still a work-in-progress and you can help out! Please check out the 'Contribute' section below.
 
 ## How to use
 
@@ -190,7 +190,7 @@ this.react((state, Component) => { // Component === this
     //
     // To re-render the application efficiently it's important to
     // determine if re-rendering is really needed by performing 
-    // checks as (and returning) as soon as possible. 
+    // checks (and returning) as soon as possible. 
     // More on this in the section 'Action & Reaction'.
 });
 
@@ -281,7 +281,7 @@ this.on(button, 'click', action((e, state) => {
 
 Just like the `reaction` helper we wrap the event callback in the `action` helper and in this case also return the `Do`
 helper. This flags if the object has changed or not. The `reaction` helper will then use this flag to determine if the object
-is the same as the previous object. So simple comparing the object in the state against the `previous` parameter will suffice.
+is the same as the previous object. So simply comparing the object in the state against the `previous` parameter will suffice.
 
 As you can see, helpers will help you as developer. However you are free to do as you please, which bring us to the 
 following section:

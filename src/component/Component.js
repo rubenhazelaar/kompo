@@ -74,6 +74,8 @@ export default class Component {
     render() {
         if(this.initial) {
             this.root = this.create();
+            this.parseActions(this.actions());
+            this.parseReactions(this.reactions());
             this.initial = false;
             Object.defineProperty(this.root, '__kompo_component__' , { writable: true,  value: this });
             return this.root;
@@ -358,6 +360,83 @@ export default class Component {
             return parent;
         } else {
             return null;
+        }
+    }
+
+    /**
+     * Adds events through an array, calls Componnent.on()
+     *
+     * Override this method and implement according to example below
+     *
+     * IMPORTANT: Make sure used Elements (in the callback) can be reached by
+     * binding them to this.<ElementName> instead of the local scope
+     * in order to register them.
+     *
+     * Example configuration:
+     *
+     * return [
+     *      [this.button, 'click', (e) => { ... callback ... }],
+     *      // etc.
+     * ];
+     */
+    actions() {
+        return null;
+    }
+
+    /**
+     * IMPORTANT: Only for internal use, MUST
+     * not be called by users.
+     *
+     * Registers all action (events) and binds callbacks
+     *
+     * @param {(Array|null)} actions
+     */
+    parseActions(actions) {
+        if(Array.isArray(actions)) {
+            for(let i = 0, l = actions.length; i < l; i++) {
+                const action = actions[i];
+                if(action.length === 4) {
+                    this.on(action[0], action[1], action[2], action[3]);
+                } else {
+                    this.on(action[0], action[1], action[2]);
+                }
+            }
+        }
+    }
+
+    /**
+     * Adds react callbacks through an array, calls Componnent.react()
+     *
+     * Override this method and implement according to example below
+     *
+     * IMPORTANT: Make sure used Elements in the callback can be reached by
+     * binding them to this.<ElementName> instead of the local scope
+     * in order to register them.
+     *
+     * Example configuration:
+     *
+     * return [
+     *      (state) => { ... callback ... },
+     *      // etc.
+     * ];
+     */
+    reactions() {
+        return null;
+    }
+
+    /**
+     * IMPORTANT: Only for internal use, MUST
+     * not be called by users.
+     *
+     * Registers all reactions and binds callbacks
+     *
+     * @param {(Array|null)} reactions
+     */
+    parseReactions(reactions) {
+        if(Array.isArray(reactions)) {
+            for(let i = 0, l = reactions.length; i < l; i++) {
+                this.react(reactions[i]);
+            }
         }
     }
 }

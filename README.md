@@ -371,6 +371,96 @@ return root;
 
 These examples are taken from the examples in the `./examples` folder.
 
+#### Code structure
+
+When working with javascript it's easy to end of with big ball of spaghetti code. Kompo helps structuring your code with
+ the help of components, however when a components becomes more complex it is necessary to keep code organized and maintainable.
+ Kompo provides some conventions & helpers which can help you with this:
+ 
+```javascript
+import Component, { create, createText } from 'kompo';
+
+// In a create function of some component ...
+
+// First declare elements used in 
+// event listeners (Component.on()) and  
+// Component.react() callbacks e.g.:
+const h1 = create('h1'), 
+    input = create('input');
+
+// Then define actions on those elements
+this.on(input, 'keyup', (e, state) => {
+     if(state.name != e.target.value) {
+         state.name = e.target.value;
+         return true; // If value has changed return true
+     }
+     return false; // This could be omitted
+});
+
+// Reactions follow an action
+this.react((state) => {
+    const name = typeof state.name !== 'undefined' && state.name !== ''? state.name: this.props.name;
+    h1.replace(createText('Hello world, this is ' + name));
+});
+
+// If all actions and reactions are coded,
+// structure your elements and return the root element
+root
+    .append(h1, false)
+    .append('p').txt('Type your name to say "Hello world": ')
+        .append(input);
+
+return root;
+```
+
+These are the basic conventions of stucturing code when using Kompo. You may of course also factor out specific functions
+outside the `Component.create()` function, however keep element sharing (through the `this` keyword) between functions (and the `create()` function) 
+to a minimum.
+ 
+To further help you with structuring your code, the Component class provides two helper methods. One for actions (events) and the
+other for reactions. These helpers allow you to bundle all actions and reactions, factoring them out of the `create()` function.
+In doing so your component's `create()` function is only responsible for creating and structuring the elements of the component.
+
+The `Component.actions()` function:
+
+```javascript
+import Component, { create, createText } from 'kompo';
+
+MyComponent extends Component {
+    // After your Component.create() function
+    actions() {
+        return [
+            [this.button, 'click', (e) => { ... callback ... }],
+            // etc.
+        ];
+    }
+}
+```
+
+__IMPORTANT:__ Make sure elements are accessible, for example by using `this.<ElementName>` in your `Component.create()` function.
+ Using this convention also signals you & others that these elements are used outside the `Component.create()` function.
+
+
+The `Component.reactions()` function is even easier:
+
+```javascript
+import Component, { create, createText } from 'kompo';
+
+MyComponent extends Component {
+    // After your Component.create() function
+    // and Component.actions() function
+    reactions() {
+        return [
+             (state) => { ... callback ... },
+             // etc.
+        ];
+    }
+}
+```
+
+What's great about these methods is that they can overridden by extending Components and can even be used together
+with the new `super` keyword in order to modify behavior for these extending Components.
+
 ## Contribute
 
 Would you like to contribute? Great!

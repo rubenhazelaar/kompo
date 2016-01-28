@@ -1,5 +1,5 @@
 import Fetch from './../xhr/Fetch.js';
-import isFunction from './../utils/isFunction.js';
+//import isFunction from './../utils/isFunction.js';
 import RAF from './../utils/requestAnimationFrame.js';
 import { Do } from './action.js';
 

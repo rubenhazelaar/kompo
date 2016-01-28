@@ -10,12 +10,15 @@
   "homepage": "https://github.com/rubenhazelaar/kompo/",
   "bugs": "https://github.com/rubenhazelaar/kompo/issues",
   "scripts": {
-    "commit": "git-cz",
+    "commit": "./node_modules/.bin/git-cz",
     "test": "./node_modules/.bin/karma start --single-run",
-    "build": "./node_modules/.bin/babel src -d lib",
+    "build": "./node_modules/.bin/babel ./src -d lib",
+    "build-umd": "./node_modules/.bin/webpack --entry ./src/index.js --output-filename ./umd/Kompo.js",
+    "build-min": "./node_modules/.bin/webpack -p --entry ./src/index.js --output-filename ./umd/Kompo.min.js",
     "examples-build": "./node_modules/.bin/webpack",
     "examples-watch": "./node_modules/.bin/webpack -w",
-    "lint": "./node_modules/.bin/eslint src/**"
+    "lint": "./node_modules/.bin/eslint ./src/**",
+    "postinstall": "node ./npm-scripts/postinstall.js"
   },
   "keywords": [
     "react",

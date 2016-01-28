@@ -1,0 +1,28 @@
+{
+  "name": "kompo",
+  "description": "Kompo is a react like library which tries to stay simple as possible. No virtual DOM or JSX. Kompo loves the DOM.",
+  "main": "./lib/index.js",
+  "authors": [
+    "Ruben Hazelaar <ruben.hazelaar@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "react",
+    "view",
+    "components",
+    "javascript",
+    "interface",
+    "DOM"
+  ],
+  "homepage": "https://github.com/rubenhazelaar/kompo",
+  "moduleType": [
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

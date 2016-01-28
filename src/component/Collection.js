@@ -1,6 +1,7 @@
 import Component from './Component.js';
 import { createFragment } from '../dom/create.js';
 import merge from '../utils/merge.js';
+import isObject from '../utils/isObject.js';
 
 /**
  * Represents a Collection which

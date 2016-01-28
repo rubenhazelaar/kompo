@@ -18,6 +18,7 @@ export {
     Collection,
     create, createFragment, createText,
     addExtension,
+    replace,
     Router, Route, IndexRoute,
     Link,
     debounce,

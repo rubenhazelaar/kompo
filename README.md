@@ -43,7 +43,7 @@ Build the examples with the following command:
 npm run examples-build
 
 ```
-Or use the one below if you wan't to experiment.
+Or use the one below if you want to experiment.
 
 ```bash
 npm run examples-watch

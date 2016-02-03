@@ -23,7 +23,8 @@ var config = {
     output: {
         path: './',
         filename: '[name].js',
-        chunkFilename: ".chunk.js"
+        library: 'Kompo',
+        libraryTarget: 'umd'
     },
     resolve: {
         extensions: ['', '.js', '.json'],

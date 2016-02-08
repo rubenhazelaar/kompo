@@ -244,10 +244,6 @@ describe('Component', function () {
             callback = function(){ return element },
             result = component.nest(callback);
 
-        it('should accept a callback', function () {
-            assert.equal(callback, component.nest);
-        });
-
         it('should return itself', function () {
             assert.equal(result, component);
         });

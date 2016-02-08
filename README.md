@@ -233,13 +233,13 @@ this.on(button, 'click', function(e, state){
 For more complex situations events can also be delegated:
 
 ```javascript
-this.on(button, 'selector' ,'click', function(e, state, Component){  // etc...  
+this.on(button, 'selector' ,'click', function(e, target, state, ChildComponent){ // Etc.  
 ```
 
-Notice in this example that we have an extra parameter to the callback, namely the child component to which the
-matched element from the selector belongs to. With the child component available it is possible to directly deal 
-with the component and NOT individual elements. This should preferably be handled inside the (child) component 
-in order to enhance containment.
+Notice in this example that we have two extra parameters to the callback, namely the target which matches the selector and
+ the child component to which the target belongs to. With the child component available it is 
+ possible to directly deal with the component and NOT individual elements. This should preferably be handled inside the 
+ (child) component in order to enhance containment.
 
 More advanced handling of actions & reactions with some helpers are available, more on that now ...
 

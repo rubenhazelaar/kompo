@@ -306,9 +306,9 @@ export default class Component {
             fn = dFn;
 
             el.addEventListener(type, function(e) {
-                let event, ChildComponent;
+                let target, event, ChildComponent;
 
-                for (let target=e.target; target && target!=this; target=target.parentNode) {
+                for (target=e.target; target && target!=this; target=target.parentNode) {
                     // loop parent nodes from the target to the delegation node
                     if (target.matches(children)) {
                        event = e;
@@ -321,7 +321,7 @@ export default class Component {
                 }
 
                 if(typeof event !== 'undefined') {
-                    eventListenerCallback(Component, fn, event, Component.state, ChildComponent);
+                    eventListenerCallback(Component, fn, [event, target], Component.state, ChildComponent);
                 }
             }, false);
         } else {
@@ -459,7 +459,10 @@ export default class Component {
  * @param {Component} ChildComponent - The child component in a delegated call
  */
 function eventListenerCallback(Component, fn, e, state, ChildComponent) {
-    if(fn.call(Component, e, state, Component, ChildComponent)) {
+    const res = Array.isArray(e)?
+        fn.call(Component, e[0], e[1], state, ChildComponent):
+        fn.call(Component, e, state, ChildComponent);
+    if(res) {
         const root = Component.getRoot();
         if(root === null) {
             RAF(Component.update.bind(Component));

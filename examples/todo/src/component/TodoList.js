@@ -36,13 +36,13 @@ export default class TodoList extends Component {
         // Delegated action to specific collection components
         // Notice the fourth parameter which returns this item.
         // Self represents the Component in which the action is called
-        this.on(root, '.js-Todo-completeToggle', 'click', (e, state, self, child) => {
+        this.on(root, '.js-Todo-completeToggle', 'click', (e, target, state, child) => {
             const todo = state.todos[child.state.index];
             todo.done = !todo.done;
             return true;
         });
 
-        this.on(root, '.js-Todo-delete', 'click', (e, state, self, child) => {
+        this.on(root, '.js-Todo-delete', 'click', (e, target, state, child) => {
             remove(state.todos, child.state.index);
             return true;
         });

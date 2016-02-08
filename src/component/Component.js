@@ -276,10 +276,10 @@ export default class Component {
                 throw new Error('Nesting callback should be a function, please provide a valid callback.');
             }
 
-            this.nest = callback;
+            this.nestCallback = callback;
             return this;
         } else {
-            return this.nest(this.state, this);
+            return this.nestCallback(this.state, this);
         }
     }
 

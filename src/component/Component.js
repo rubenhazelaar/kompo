@@ -308,10 +308,10 @@ export default class Component {
             el.addEventListener(type, function(e) {
                 let target, event, ChildComponent;
 
-                for (target=e.target; target && target!=this; target=target.parentNode) {
+                for (let target=e.target; target && target!=this; target=target.parentNode) {
                     // loop parent nodes from the target to the delegation node
                     if (target.matches(children)) {
-                       event = e;
+                        event = [e, target];
                     }
 
                     if(typeof target.__kompo_component__ !== 'undefined') {
@@ -321,7 +321,7 @@ export default class Component {
                 }
 
                 if(typeof event !== 'undefined') {
-                    eventListenerCallback(Component, fn, [event, target], Component.state, ChildComponent);
+                    eventListenerCallback(Component, fn, event, Component.state, ChildComponent);
                 }
             }, false);
         } else {

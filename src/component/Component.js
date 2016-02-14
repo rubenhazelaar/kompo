@@ -314,7 +314,10 @@ export default class Component {
                         event = [e, target];
                     }
 
-                    if(typeof target.__kompo_component__ !== 'undefined') {
+                    if(
+                        typeof event !== 'undefined'
+                        && typeof target.__kompo_component__ !== 'undefined'
+                    ) {
                         ChildComponent = target.__kompo_component__;
                         break;
                     }

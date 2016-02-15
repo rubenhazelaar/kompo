@@ -12,10 +12,9 @@ import isObject from './../utils/isObject.js';
 export default function reaction(callback, scope) {
     let previous;
     return function(state, Component) {
-        const context = scope || this,
-            isObj = isObject(previous);
+        const context = scope || this;
         if(
-            isObj
+            isObject(previous)
             && previous.__kompo_stale__ === true) {
             previous = undefined;
         }
@@ -23,7 +22,7 @@ export default function reaction(callback, scope) {
         previous = callback.call(context, state, previous, Component);
 
         if(
-            isObj
+            isObject(previous)
             && previous.hasOwnProperty('__kompo_stale__')
         ) {
             previous.__kompo_stale__ = false;

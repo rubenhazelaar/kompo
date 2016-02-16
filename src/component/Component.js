@@ -99,8 +99,18 @@ export default class Component {
             Component.update();
         }
 
+        const hasIgnoredStatefull = typeof this.ignoredStatefull !== 'undefined';
+        if(hasIgnoredStatefull) {
+            this.statefulls.splice(this.statefulls.indexOf(hasIgnoredStatefull), 1);
+        }
+
         for(let i = 0, l = this.statefulls.length; i < l; i++) {
             this.statefulls[i](this.state, this);
+        }
+
+        if(hasIgnoredStatefull) {
+            this.statefulls.push(this.ignoredStatefull);
+            this.ignoredStatefull = undefined;
         }
     }
 
@@ -137,8 +147,7 @@ export default class Component {
      * @returns {Component} - parent component
      */
     unmount(Component) {
-        const index = this.mounts.indexOf(Component);
-        this.mounts.splice(index, 1);
+        this.mounts.splice(this.mounts.indexOf(Component), 1);
         return this;
     }
 

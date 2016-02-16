@@ -19,10 +19,14 @@ export default class AsyncAction extends Fetch {
      *
      * @param {Function} callback
      * @param {*} data
+     * @param {boolean} ignore
      * @returns {Function}
      */
-    when(callback, data) {
+    when(callback, data, ignore = false) {
         return (e, state, Component) => {
+            if(ignore) {
+                Component.ignoredStatefull = callback;
+            }
             this.state = state;
             this.Component = Component;
             let result = callback(e, this, state, Component);
@@ -109,9 +113,13 @@ export default class AsyncAction extends Fetch {
      * Component tree from root
      *
      * @param {Function} callback
+     * @param {boolean} ignoredStatefull
      * @returns {Function}
      */
-    do(callback) {
+    do(callback, ignoredStatefull = null) {
+        if(ignoredStatefull) {
+            this.Component.ignoredStatefull = ignoredStatefull;
+        }
         return (self) => {
             let result = callback(self, this.state, this.Component);
             result = this.flagObject(result);

@@ -297,6 +297,44 @@ Just like the `reaction` helper we wrap the event callback in the `action` helpe
 helper. This flags if the object has changed or not. The `reaction` helper will then use this flag to determine if the object
 is the same as the previous object. So simply comparing the object in the state against the `previous` parameter will suffice.
 
+In some cases it is necessary to trigger an action in a reaction/statefull callback. Normally this would cause an infinite loop, however by using
+the following helpers will enable you to ignore that reaction/statefull callback in the update loop. Some examples:
+
+```javascript
+
+// In a create function of some component ...
+
+ this.react(function willBeIgnoredInNextUpdate(state, Component) {
+    Component.ignore(willBeIgnoredInNextUpdate);
+    // ... trigger an action here
+ });
+```
+
+```javascript
+
+// In a create function of some component ...
+
+ this.react(function willBeIgnoredInNextUpdate(state, Component) {
+        Component.on(el, 'click', action((e, state) => {
+            // Handling the action ...
+        }, willBeIgnoredInNextUpdate);
+        
+        
+ });
+```
+
+```javascript
+    
+// In a create function of some component ...
+
+this.react(function willBeIgnoredInNextUpdate(state, Component) { 
+
+    // ... Perhaps with an AsyncAction as callback of Promise for example
+    promise.then(action.d(callback, willBeIgnoredInNextUpdate));
+
+// ... more code
+```
+
 As you can see, helpers will help you as developer. However you are free to do as you please, which bring us to the 
 following section:
 

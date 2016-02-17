@@ -13,11 +13,11 @@ import Component from '../component/Component.js';
  *
  * @callback cb
  * @param {Function} cb
- * @param {*} [scope]
- * @param {(null|Component)} ignoredStatefull
+ * @param {(undefined|Function)} ignoredStatefull
+ * @param {(undefined|*)} [scope]
  * @returns {Function}
  */
-export default function action(cb, scope, ignoredStatefull = null) {
+export default function action(cb, ignoredStatefull, scope) {
     return function(...args) {
         const context = scope || this,
             d = cb.call(context, ...args);

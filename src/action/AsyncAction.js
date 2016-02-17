@@ -113,7 +113,7 @@ export default class AsyncAction extends Fetch {
      * Component tree from root
      *
      * @param {Function} callback
-     * @param {boolean} ignoredStatefull
+     * @param {(null|Function)} ignoredStatefull
      * @returns {Function}
      */
     do(callback, ignoredStatefull = null) {

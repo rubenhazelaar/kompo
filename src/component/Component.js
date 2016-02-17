@@ -451,6 +451,15 @@ export default class Component {
             }
         }
     }
+
+    /**
+     *
+     * @param {Function} statefull
+     */
+    ignore(statefull) {
+        this.ignoredStatefull = statefull;
+        return this;
+    }
 }
 
 /**

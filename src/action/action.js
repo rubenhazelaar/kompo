@@ -1,3 +1,5 @@
+import Component from '../component/Component.js';
+
 /**
  * Represents an action on a part
  * of the state tree.
@@ -12,12 +14,22 @@
  * @callback cb
  * @param {Function} cb
  * @param {*} [scope]
+ * @param {(null|Component)} ignoredStatefull
  * @returns {Function}
  */
-export default function action(cb, scope) {
-    return function(e, state) {
+export default function action(cb, scope, ignoredStatefull = null) {
+    return function(...args) {
         const context = scope || this,
-            d = cb.call(context, e, state);
+            d = cb.call(context, ...args);
+
+        if(ignoredStatefull) {
+            if(context instanceof Component) {
+                context.ignoredStatefull = ignoredStatefull;
+            } else {
+                throw new Error('Scope or context should be a Component to ignore the statefull callback.');
+            }
+        }
+
         if(!d instanceof Do) throw new Error('Action callback should return a Do class.');
         Object.defineProperty(d.part, '__kompo_stale__' , { writable: true,  value: d.it });
         return d.it;

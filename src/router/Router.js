@@ -37,6 +37,7 @@ export default class Router {
         this.params = [];
 
         this.parseRoute(Route);
+        this.setUrl(window.location.pathname.replace(this.base,''));
 
         window.addEventListener('popstate', ()=>{
             this.setUrl(window.location.pathname.replace(this.base,''));

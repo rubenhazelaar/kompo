@@ -45,7 +45,7 @@ export class Do {
     /**
      * Creates Do
      *
-     * @param (boolean) d - If state (part) has changed
+     * @param {boolean} d - If state (part) has changed
      * @param {*} part - Part of state which is involved in the action
      */
     constructor(d, part) {

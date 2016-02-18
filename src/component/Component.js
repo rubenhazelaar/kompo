@@ -453,6 +453,8 @@ export default class Component {
     }
 
     /**
+     * Registers a statefull callback
+     * that will be ignored on the next update
      *
      * @param {Function} statefull
      */

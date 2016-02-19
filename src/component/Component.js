@@ -105,7 +105,7 @@ export default class Component {
         }
 
         for(let i = 0, l = this.statefulls.length; i < l; i++) {
-            this.statefulls[i](this.state, this);
+            this.statefulls[i](this.selectedState || this.state, this);
         }
 
         if(hasIgnoredStatefull) {
@@ -119,21 +119,28 @@ export default class Component {
      *
      * - Setting it as its parent
      * - Passing along the state
+     * - Passing along the state defined by a selector
      *
      * Components MAY be registered through Component::mount(),
      * however those that are NOT ARE and WILL REMAIN stateless
      * and will be excluded from the update cycle.
      *
      * If you only want to pass state without including
-     * it in the update cycle use: Component::setState().
+     * it in the update cycle use: Component::setState()
+     * or Component::setSelectedState().
      *
      * @param {Component} Component - child component
+     * @param {Function} selector - selects part of state
      * @returns {Component} - child component
      */
-    mount(Component) {
+    mount(Component, selector) {
         this.mounts.push(Component);
         Component.setParent(this);
         Component.setState(this.state);
+        if(isFunction(selector)) {
+            Component.setSelectedState(selector(this.state));
+        }
+
         return Component;
     }
 
@@ -196,7 +203,7 @@ export default class Component {
     react(fn) {
         if(this.stateless) throw new Error('Set state (through mount() or setState()) before registering a react function.');
         this.statefulls.push(fn);
-        return fn(this.state, this);
+        return fn(this.selectedState || this.state, this);
     }
 
     /**
@@ -268,6 +275,19 @@ export default class Component {
     }
 
     /**
+     * Set the state selected for the
+     * Component
+     *
+     * @param {*} state
+     * @returns {Component}
+     */
+    setSelectedState(state) {
+        this.stateless = false;
+        this.selectedState = state;
+        return this;
+    }
+
+    /**
      * Enables the user to nest Components and Nodes
      *
      * The nest function should be used twice,
@@ -288,7 +308,7 @@ export default class Component {
             this.nestCallback = callback;
             return this;
         } else {
-            return this.nestCallback(this.state, this);
+            return this.nestCallback(this.selectedState || this.state, this);
         }
     }
 
@@ -333,12 +353,12 @@ export default class Component {
                 }
 
                 if(typeof event !== 'undefined') {
-                    eventListenerCallback(Component, fn, event, Component.state, ChildComponent);
+                    eventListenerCallback(Component, fn, event, Component.selectedState || Component.state, ChildComponent);
                 }
             }, false);
         } else {
             el.addEventListener(type, (e) => {
-                eventListenerCallback(Component, fn, e, Component.state);
+                eventListenerCallback(Component, fn, e, Component.selectedState || Component.state);
             }, false);
         }
 

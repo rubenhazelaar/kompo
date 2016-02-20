@@ -32,9 +32,10 @@ export default class Link extends Component {
      * @returns {Node}
      */
     create() {
+        // Destructure props
+        const { classNames, activeClass, defaultEvent, onClick, title, data } = this.props;
         // Create root element
         const a = document.createElement('a'),
-            classNames = this.props.classNames,
             classNamesLength = classNames.length;
 
         // Add classes
@@ -45,7 +46,6 @@ export default class Link extends Component {
         }
 
         this.react((state) => {
-            const activeClass = this.props.activeClass;
             if(state.Router.isUrl(this.url)) {
                 a.classList.add(activeClass);
             } else {
@@ -71,9 +71,12 @@ export default class Link extends Component {
         }
 
         // Add event
-        this.on(a, this.props.defaultEvent, (e, state) => {
+        this.on(a, defaultEvent, (e, state, ChildComponent) => {
             e.preventDefault();
-            return state.Router.goTo(this.url, this.props.title, this.props.data);
+            if(isFunction(onClick)) {
+                onClick.call(this, e, state, ChildComponent);
+            }
+            return state.Router.goTo(this.url, title, data);
         });
 
         return a;
@@ -86,5 +89,6 @@ Link.defaultProps = {
     data: {}, // Data to push with pushState()
     title: '',
     defaultEvent: 'click',
-    activeClass: 'active'
+    activeClass: 'active',
+    onClick: null
 };

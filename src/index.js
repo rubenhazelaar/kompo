@@ -15,6 +15,10 @@ import isFunction from './utils/isFunction.js';
 import isObject from './utils/isObject.js';
 import merge from './utils/merge.js';
 import throttle from './utils/throttle.js';
+import arrayDeepEquals from './utils/arrayDeepEquals.js';
+import arrayEquals from './utils/arrayEquals.js';
+import objectDeepEquals from './utils/objectDeepEquals.js';
+import objectEquals from './utils/objectEquals.js';
 
 export default Component;
 
@@ -34,5 +38,9 @@ export {
     isFunction,
     isObject,
     merge,
-    throttle
+    throttle,
+    arrayDeepEquals,
+    arrayEquals,
+    objectDeepEquals,
+    objectEquals
 };

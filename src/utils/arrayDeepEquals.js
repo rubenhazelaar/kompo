@@ -1,3 +1,5 @@
+import objectDeepEquals from './objectDeepEquals.js';
+
 export default function arrayDeepEquals(arr1, arr2) {
     // if the other arr1 is a falsy value, return
     if (!arr1 || !arr2)
@@ -11,7 +13,12 @@ export default function arrayDeepEquals(arr1, arr2) {
         // Check if we have nested arrays
         if (arr1[i] instanceof Array && arr2[i] instanceof Array) {
             // recurse into the nested arrays
-            if (!deepEquals(arr1[i], arr2[i]))
+            if (!arrayDeepEquals(arr1[i], arr2[i]))
+                return false;
+        }
+        else if (arr1[i] instanceof Object && arr2[i] instanceof Object) {
+            // recurse into another objects
+            if (!objectDeepEquals(arr1[i], arr2[i]))
                 return false;
         }
         else if (arr1[i] !== arr2[i]) {

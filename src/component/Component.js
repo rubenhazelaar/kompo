@@ -335,7 +335,7 @@ export default class Component {
             fn = dFn;
 
             el.addEventListener(type, function(e) {
-                let target, event, ChildComponent;
+                let event, ChildComponent;
 
                 for (let target=e.target; target && target!=this; target=target.parentNode) {
                     // loop parent nodes from the target to the delegation node

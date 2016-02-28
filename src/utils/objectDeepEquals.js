@@ -1,16 +1,16 @@
 import arrayDeepEquals from './arrayDeepEquals.js';
 
-export default function objectDeepEquals(obj1, obj2) {
+export default function objectDeepEquals(obj1: { [key: any]: any }, obj2: { [key: any]: any }): boolean {
     //For the first loop, we only check for types
-    const obj1k = Object.keys(obj1),
-        obj2k = Object.keys(obj2),
-        obj1l = obj1k.length,
-        obj2l = obj2k.length;
+    const obj1k: Array<any> = Object.keys(obj1),
+        obj2k: Array<any> = Object.keys(obj2),
+        obj1l: number = obj1k.length,
+        obj2l: number = obj2k.length;
 
     if(obj1l !== obj2l) return false;
 
     for(let i = 0, l = obj1l; i < l; ++i) {
-        const propName = obj1k[i];
+        const propName: string | number = obj1k[i];
         //Check for inherited methods and properties - like .equals itself
         //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty
         //Return false if the return value is different
@@ -26,7 +26,7 @@ export default function objectDeepEquals(obj1, obj2) {
 
     //Now a deeper check using other objects property names
     for(let i = 0, l = obj2l; i < l; ++i) {
-        const propName = obj2k[i];
+        const propName: string | number = obj2k[i];
         //We must check instances anyway, there may be a property that only exists in obj2
         //I wonder, if remembering the checked values from the first loop would be faster or not
         if (obj1.hasOwnProperty(propName) != obj2.hasOwnProperty(propName)) {

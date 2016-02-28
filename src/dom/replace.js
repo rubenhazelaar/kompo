@@ -1,3 +1,4 @@
+// @flow
 import c from './create.js';
 import Component from '../component/Component.js';
 import isObject from '../utils/isObject.js';
@@ -8,11 +9,17 @@ import { addAttributes } from './create.js'
  *
  * @param {Node} parent - parent element to replace child on
  * @param {*} child - new child to replace for old child
- * @param {boolean} replaceLastChild - replace first or last child
- * @returns {Node} child - child element
+ * @param {(boolean|Object)} replaceLastChild - replace first or last child | represents an attribute object
+ * @param {boolean} rLC
+ * @returns {Element} child - child element
  */
-export default function replace(parent, child, replaceLastChild = false, rLC = false) {
-    const arg2isObject = isObject(arguments[2]);
+export default function replace(
+    parent: Node,
+    child: KompoElement,
+    replaceLastChild: boolean | attributes = false,
+    rLC: boolean = false
+): Node {
+    const arg2isObject: boolean = isObject(arguments[2]);
     let replacedChild;
     if (arg2isObject) {
          replacedChild = rLC?

@@ -1,6 +1,7 @@
+// @flow
 import objectDeepEquals from './objectDeepEquals.js';
 
-export default function arrayDeepEquals(arr1, arr2) {
+export default function arrayDeepEquals(arr1: Array<any>, arr2: Array<any>): boolean {
     // if the other arr1 is a falsy value, return
     if (!arr1 || !arr2)
         return false;
@@ -9,7 +10,7 @@ export default function arrayDeepEquals(arr1, arr2) {
     if (arr1.length !== arr2.length)
         return false;
 
-    for (var i = 0, l=arr1.length; i < l; i++) {
+    for (let i = 0, l=arr1.length; i < l; i++) {
         // Check if we have nested arrays
         if (arr1[i] instanceof Array && arr2[i] instanceof Array) {
             // recurse into the nested arrays

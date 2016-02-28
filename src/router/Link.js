@@ -1,3 +1,4 @@
+// @flow
 import Component from '../component/Component.js';
 import isFunction from '../utils/isFunction.js';
 
@@ -11,15 +12,18 @@ import isFunction from '../utils/isFunction.js';
  * @augments Component
  */
 export default class Link extends Component {
+    url: string;
+    child: KompoElement | Function;
+
     /**
      * Create a Link instance
      *
      * @param {string} url
-     * @param {string|Component|Node} child
+     * @param {string|Component|Element} child
      * @param {Object} [props]
      *
      */
-    constructor(url, child, props) {
+    constructor(url: string, child: KompoElement | Function, props: props): void {
         super(props);
         this.url = url;
         this.child = child;
@@ -29,14 +33,14 @@ export default class Link extends Component {
      * @inheritdoc
      *
      * @throws an error if incorrect child is provided
-     * @returns {Node}
+     * @returns {Element}
      */
-    create() {
+    create(): Element {
         // Destructure props
         const { classNames, activeClass, defaultEvent, onClick, title, data } = this.props;
         // Create root element
-        const a = document.createElement('a'),
-            classNamesLength = classNames.length;
+        const a: Element = document.createElement('a'),
+            classNamesLength: number = classNames.length;
 
         // Add classes
         if (classNamesLength > 0) {
@@ -45,7 +49,7 @@ export default class Link extends Component {
             }
         }
 
-        this.react((state) => {
+        this.react((state: state) => {
             if(state.Router.isUrl(this.url)) {
                 a.classList.add(activeClass);
             } else {
@@ -71,7 +75,7 @@ export default class Link extends Component {
         }
 
         // Add event
-        this.on(a, defaultEvent, (e, state, ChildComponent) => {
+        this.on(a, defaultEvent, (e: Event, state: state, ChildComponent: Component) => {
             e.preventDefault();
             if(isFunction(onClick)) {
                 onClick.call(this, e, state, ChildComponent);

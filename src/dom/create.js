@@ -1,4 +1,5 @@
-const doc = document;
+// @flow
+const doc: Document = document;
 
 /**
  * Creates an Element, when no tagName
@@ -8,8 +9,8 @@ const doc = document;
  * @param {string|undefined} tagName
  * @returns {Element}
  */
-export default function create(tagName, attributes) {
-    let Element;
+export default function create(tagName: ?string, attributes: ?attributes): Element {
+    let Element: Element;
     if(typeof tagName === 'undefined') {
         Element = doc.createElement('div');
     } else {
@@ -20,7 +21,7 @@ export default function create(tagName, attributes) {
         addAttributes(Element, attributes);
     }
 
-    return Element
+    return Element;
 }
 
 /**
@@ -31,15 +32,14 @@ export default function create(tagName, attributes) {
  * @param {Object} obj
  * @returns {Element}
  */
-export function addAttributes(Element, obj) {
-    const keys = Object.keys(obj);
+export function addAttributes(Element: Element, obj: attributes): Element {
+    const keys: Array<string> = Object.keys(obj);
     for(let i = 0, l = keys.length; i < l; i++) {
-        const key = keys[i],
-            value = obj[key];
+        const key: string = keys[i],
+            value: any = obj[key];
         Element.setAttribute(key, value);
     }
     return Element;
-
 }
 
 /**
@@ -47,7 +47,7 @@ export function addAttributes(Element, obj) {
  *
  * @returns {DocumentFragment}
  */
-export function createFragment() {
+export function createFragment(): DocumentFragment {
     return doc.createDocumentFragment();
 }
 
@@ -57,6 +57,6 @@ export function createFragment() {
  * @param {string} str
  * @returns {Text}
  */
-export function createText(str) {
+export function createText(str: string): Text {
     return doc.createTextNode(str);
 }

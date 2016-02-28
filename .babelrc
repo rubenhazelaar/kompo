@@ -1,6 +1,9 @@
 {
-    "presets": ["es2015"],
+    "presets": ["es2015", "stage-0"],
     "plugins": [
+        "syntax-flow",
+        "transform-class-properties",
+        "transform-flow-strip-types",
         "transform-object-assign",
         ['transform-es2015-classes', {loose: true}]
     ]

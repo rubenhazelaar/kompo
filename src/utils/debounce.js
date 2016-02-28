@@ -1,3 +1,4 @@
+// @flow
 /**
  * Debounces a function call
  *
@@ -6,11 +7,11 @@
  * @param {Object} scope
  * @returns {Function}
  */
-export default function debounce(fn, delay, scope) {
-    let timer = null;
+export default function debounce(fn: Function, delay: number, scope: any): Function {
+    let timer: ?number = null;
     return function() {
-        const context = scope || this,
-            args = arguments;
+        const context: any = scope || this,
+            args: Array<any> = arguments;
         clearTimeout(timer);
         timer = setTimeout(function() {
             return fn.apply(context, args);

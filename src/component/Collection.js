@@ -1,3 +1,4 @@
+// @flow
 import Component from './Component.js';
 import { createFragment } from '../dom/create.js';
 import merge from '../utils/merge.js';
@@ -9,6 +10,12 @@ import isObject from '../utils/isObject.js';
  * and rerender a collection of Components
  */
 export default class Collection extends Component {
+    root: Element;
+    state: state;
+    stateless: boolean;
+    componentConstructor: Function;
+    options: { [key: any]: any };
+
     /**
      * Create a collections instance and creates
      * the collection
@@ -18,7 +25,7 @@ export default class Collection extends Component {
      * @param {Function} componentConstructor - class constructor for creating the collection items
      * @param {Object} options
      */
-    constructor(root, state, componentConstructor, options) {
+    constructor(root: Node, state: state, componentConstructor: Function, options: { [key: any]: any }): void {
         super();
         this.root = root;
         this.state = state;
@@ -37,9 +44,9 @@ export default class Collection extends Component {
      * Creates the collection, and is also used to check
      * integrity on update
      *
-     * @returns {Node}
+     * @returns {Element}
      */
-    create() {
+    create(): Element {
         if(Array.isArray(this.state)) {
             this.append(this.state);
         } else if(isObject(this.state)) {
@@ -58,13 +65,13 @@ export default class Collection extends Component {
      * @param {Array} arr - array to iterate or keys from object
      * @param {Object} obj - object to iterate
      */
-    append(arr, obj) {
-        const arrLength = arr.length,
-            mountsLength = this.mounts.length;
+    append(arr: Array<any>, obj: ?{ [key: any]: any }): void {
+        const arrLength: number = arr.length,
+            mountsLength: number = this.mounts.length;
 
         // Mount when collection grows
         if(arrLength > mountsLength) {
-            let parent, useFragment;
+            let parent: Node | DocumentFragment, useFragment: boolean;
             if (arrLength - mountsLength > this.options.fragmentLimit) {
                 parent = createFragment();
                 useFragment = true;
@@ -73,9 +80,9 @@ export default class Collection extends Component {
                 useFragment = false;
             }
 
-            for(let i = mountsLength; i < arrLength; i++) {
-                const index = obj? arr[i]: i,
-                    value = obj? obj[index]: arr[i];
+            for(let i: number = mountsLength; i < arrLength; i++) {
+                const index: number | string = obj? arr[i]: i,
+                    value: any = obj? obj[index]: arr[i];
 
                 parent.appendChild(
                     this.mount(
@@ -97,18 +104,18 @@ export default class Collection extends Component {
      * Deletes components, then updates them and
      * appends more if needed.
      */
-    update() {
+    update(): void {
         if(this.state.hasOwnProperty('__kompo_collection_remove__')) {
-            const index = this.state.__kompo_collection_remove__;
+            const index: number = this.state.__kompo_collection_remove__;
 
             if(Array.isArray(index)) {
                 for(let i = 0, l = index.length; i < l; i++) {
-                    const Component = this.unmountByIndex(index);
+                    const Component: Component = this.unmountByIndex(index);
                     Component.root.parentNode.removeChild(Component.root);
                     this.state.splice(index, 1);
                 }
             } else {
-                const Component = this.unmountByIndex(index);
+                const Component: Component = this.unmountByIndex(index);
                 Component.root.parentNode.removeChild(Component.root);
                 this.state.splice(index, 1);
             }
@@ -117,7 +124,7 @@ export default class Collection extends Component {
         }
 
         for(let i = 0, l = this.mounts.length; i < l; i++) {
-            const Component = this.mounts[i];
+            const Component: Component = this.mounts[i];
             Component.state.index = i;
             if(Component.stateless || Component.isolated) continue;
             Component.update();
@@ -134,7 +141,7 @@ export default class Collection extends Component {
      * @param Component
      * @returns {Component}
      */
-    mount(Component) {
+    mount(Component: Component): Component {
         this.mounts.push(Component);
         Component.setParent(this);
         return Component;
@@ -149,7 +156,7 @@ export default class Collection extends Component {
      *
      * @returns {Collection}
      */
-    setState(){
+    setState(): Collection {
         return this;
     }
 }
@@ -161,6 +168,6 @@ export default class Collection extends Component {
  * @param {*} part
  * @param {Number} index
  */
-export function remove(part, index) {
+export function remove(part: state, index: number | string): void {
     Object.defineProperty(part, '__kompo_collection_remove__' , { configurable: true, writable: true,  value: index });
 }

@@ -1,3 +1,4 @@
+// @flow
 import RAF from '../utils/requestAnimationFrame.js';
 import merge from '../utils/merge.js';
 import replace from '../dom/replace.js';
@@ -23,13 +24,28 @@ import matches from '../utils/matches.js'; // Self-executing
  * - Component::on()
  */
 export default class Component {
+    props: props;
+    statefulls: Array<statefull>;
+    mounts: Array<Component>;
+    stateless: boolean;
+    isolated: boolean;
+    initial: boolean;
+    root: Element;
+    parent: Component;
+    state: state;
+    selectedState: state;
+    ignoredStatefull: statefull;
+    nestCallback: nestCallback;
+    level: ?number; // Used in Router
+
     /**
      * MAY be overridden, make sure to pass properties to the
      * super() function. Overriding constructor MUST call super().
      * @constructor
      * @param {Object} props
+     * @flow
      */
-    constructor(props) {
+    constructor(props: ?props): void {
         // Merge props & defaultProps
         // Do an Object.assign() to remove the reference to defaultProps
         const defaultProps = Object.assign({},this.constructor.defaultProps);
@@ -59,8 +75,8 @@ export default class Component {
      *
      * @returns {Element}
      */
-    create() {
-        throw new Error('Component must override the create method and return an Node object.');
+    create(): Element {
+        throw new Error('Component must override the create method and return an Element object.');
     }
 
     /**
@@ -71,7 +87,7 @@ export default class Component {
      *
      * @returns {Element} this.root - root of the component
      */
-    render() {
+    render(): Element {
         if(this.initial) {
             this.root = this.create();
             this.parseActions(this.actions());
@@ -92,16 +108,16 @@ export default class Component {
      * Updates the component and its child components,
      * if these are not stateless or isolated
      */
-    update() {
+    update(): void {
         for(let i = 0, l = this.mounts.length; i < l; i++) {
-            const Component = this.mounts[i];
+            const Component: Component = this.mounts[i];
             if(Component.stateless || Component.isolated) continue;
             Component.update();
         }
 
-        const hasIgnoredStatefull = typeof this.ignoredStatefull !== 'undefined';
+        const hasIgnoredStatefull: boolean = typeof this.ignoredStatefull !== 'undefined';
         if(hasIgnoredStatefull) {
-            this.statefulls.splice(this.statefulls.indexOf(hasIgnoredStatefull), 1);
+            this.statefulls.splice(this.statefulls.indexOf(this.ignoredStatefull), 1);
         }
 
         for(let i = 0, l = this.statefulls.length; i < l; i++) {
@@ -133,7 +149,7 @@ export default class Component {
      * @param {Function} selector - selects part of state
      * @returns {Component} - child component
      */
-    mount(Component, selector) {
+    mount(Component: Component, selector: ?(state: state) => state): Component {
         this.mounts.push(Component);
         Component.setParent(this);
         Component.setState(this.state);
@@ -153,7 +169,7 @@ export default class Component {
      * @param {Component} Component - child component
      * @returns {Component} - parent component
      */
-    unmount(Component) {
+    unmount(Component: Component): Component {
         this.mounts.splice(this.mounts.indexOf(Component), 1);
         return this;
     }
@@ -168,8 +184,8 @@ export default class Component {
      * @param {Number} index
      * @returns {Component} {*}
      */
-    unmountByIndex(index) {
-        const Component = this.mounts[index];
+    unmountByIndex(index: number): Component {
+        const Component: Component = this.mounts[index];
         this.mounts.splice(index, 1);
         return Component;
     }
@@ -185,7 +201,7 @@ export default class Component {
      *
      * @param {Component} Component - child component
      */
-    setParent(Component) {
+    setParent(Component: Component): Component {
         this.parent = Component;
         return this;
     }
@@ -200,7 +216,7 @@ export default class Component {
      * @param {Function} fn - closure which handles the state.
      * @returns {*} - return value of closure
      */
-    react(fn) {
+    react(fn: statefull): boolean | Component {
         if(this.stateless) throw new Error('Set state (through mount() or setState()) before registering a react function.');
         this.statefulls.push(fn);
         return fn(this.selectedState || this.state, this);
@@ -212,18 +228,18 @@ export default class Component {
      * which holds the rendered root Element of the
      * router Component.
      *
-     * @param {(Node|Function)} parent - closure(component, state, self)
+     * @param {(Element|Function)} parent - closure(component, state, self)
      * @returns {Component} - the routed component
      */
-    mountRoutedComponent(parent) {
-        let isFn = false;
+    mountRoutedComponent(parent: Element | Function): Component {
+        let isFn: boolean = false;
         if(isFunction(parent)) {
             isFn = true;
-        } else if(!parent instanceof Node) {
-            throw new Error('Routed Component cannot be assigned. Please make sure parent is a Node or a closure.');
+        } else if(!parent instanceof Element) {
+            throw new Error('Routed Component cannot be assigned. Please make sure parent is a Element or a closure.');
         }
 
-        return this.react((state, Self) => {
+        return this.react((state: state, Self: Component) => {
             const Component = state.Router.getComponent(this);
 
             if(Component) {
@@ -251,7 +267,7 @@ export default class Component {
      * @param {Object} state
      * @returns {Component} - self
      */
-    setState(state) {
+    setState(state: state): Component {
         this.stateless = false;
         this.state = state;
         return this;
@@ -268,7 +284,7 @@ export default class Component {
      * @param {Object} state
      * @returns {Component} - self
      */
-    setIsolatedState(state) {
+    setIsolatedState(state: state): Component {
         this.setState(state);
         this.isolated = true;
         return this;
@@ -281,14 +297,14 @@ export default class Component {
      * @param {*} state
      * @returns {Component}
      */
-    setSelectedState(state) {
+    setSelectedState(state: state): Component {
         this.stateless = false;
         this.selectedState = state;
         return this;
     }
 
     /**
-     * Enables the user to nest Components and Nodes
+     * Enables the user to nest Components and Elements
      *
      * The nest function should be used twice,
      * one time to define its place within the
@@ -297,9 +313,9 @@ export default class Component {
      * nested (within a callback).
      *
      * @param {Function} [callback]
-     * @returns {(Component|Node|DocumentFragment|*)}
+     * @returns {(Component|Elements|DocumentFragment|*)}
      */
-    nest(callback) {
+    nest(callback?: nestCallback): Component | Elements | DocumentFragment {
         if (arguments.length === 1) {
             if(!isFunction(callback)) {
                 throw new Error('Nesting callback should be a function, please provide a valid callback.');
@@ -327,14 +343,14 @@ export default class Component {
      * @param {(undefined|Function)} [dFn] | type - closure for delegated event or undefined
      * @returns {Component} - self
      */
-    on(el, type, fn, dFn) {
-        const Component = this;
+    on(el: EventTarget, type: string | Function, fn: Function | string, dFn: ?Function): Component {
+        const Component: Component = this;
         if(arguments.length === 4) {
-            const children = type;
+            const children: string | Function = type;
             type = fn;
             fn = dFn;
 
-            el.addEventListener(type, function(e) {
+            el.addEventListener(type, function(e) : void {
                 let event, ChildComponent;
 
                 for (let target=e.target; target && target!=this; target=target.parentNode) {
@@ -357,7 +373,7 @@ export default class Component {
                 }
             }, false);
         } else {
-            el.addEventListener(type, (e) => {
+            el.addEventListener(type, function(e) : void {
                 eventListenerCallback(Component, fn, e, Component.selectedState || Component.state);
             }, false);
         }
@@ -369,12 +385,12 @@ export default class Component {
      * Removes the event listener on the given element &
      * of a certain type.
      *
-     * @param {Element} el - element for detaching a type of event listeners
+     * @param {EventTarget} el - element for detaching a type of event listeners
      * @param {string} type - type of event
      * @returns {Component} - self
      */
-    off(el, type) {
-        el.removeEventListener(type, eventListenerCallback, false);
+    off(el: EventTarget, type: string, eventListener: EventListener): Component {
+        el.removeEventListener(type, eventListener, false);
         return this;
     }
 
@@ -383,15 +399,15 @@ export default class Component {
      *
      * @returns {Component} root
      */
-    getRoot() {
+    getRoot(): Component {
         if(typeof this.parent !== 'undefined' && !this.isolated) {
-            let parent = this.parent;
+            let parent: Component = this.parent;
             while (typeof parent.parent !== 'undefined' && !parent.isolated) {
                 parent = parent.parent
             }
             return parent;
         } else {
-            return null;
+            return this;
         }
     }
 
@@ -411,8 +427,8 @@ export default class Component {
      *      // etc.
      * ];
      */
-    actions() {
-        return null;
+    actions(): Array<[EventTarget, string, Function | string, ?Function]>  {
+        return [];
     }
 
     /**
@@ -421,9 +437,9 @@ export default class Component {
      *
      * Registers all action (events) and binds callbacks
      *
-     * @param {(Array|null)} actions
+     * @param {(Array)} actions
      */
-    parseActions(actions) {
+    parseActions(actions: Array<[EventTarget, string, Function | string, ?Function]>): void {
         if(Array.isArray(actions)) {
             for(let i = 0, l = actions.length; i < l; i++) {
                 const action = actions[i];
@@ -452,8 +468,8 @@ export default class Component {
      *      // etc.
      * ];
      */
-    reactions() {
-        return null;
+    reactions(): Array<statefull> {
+        return [];
     }
 
     /**
@@ -462,9 +478,9 @@ export default class Component {
      *
      * Registers all reactions and binds callbacks
      *
-     * @param {(Array|null)} reactions
+     * @param {(Array)} reactions
      */
-    parseReactions(reactions) {
+    parseReactions(reactions: Array<statefull>): void {
         if(Array.isArray(reactions)) {
             for(let i = 0, l = reactions.length; i < l; i++) {
                 this.react(reactions[i]);
@@ -478,7 +494,7 @@ export default class Component {
      *
      * @param {Function} statefull
      */
-    ignore(statefull) {
+    ignore(statefull: statefull): Component {
         this.ignoredStatefull = statefull;
         return this;
     }
@@ -501,7 +517,7 @@ export default class Component {
  * @param {*} state - application state
  * @param {Component} ChildComponent - The child component in a delegated call
  */
-function eventListenerCallback(Component, fn, e, state, ChildComponent) {
+function eventListenerCallback(Component: Component, fn: Function, e: Event, state: state, ChildComponent?: Component): void {
     const res = Array.isArray(e)?
         fn.call(Component, e[0], e[1], state, ChildComponent):
         fn.call(Component, e, state, ChildComponent);

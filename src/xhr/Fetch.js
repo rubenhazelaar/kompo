@@ -1,3 +1,4 @@
+// @flow
 import merge from '../utils/merge.js';
 import isFunction from '../utils/isFunction.js';
 import Promise from '../utils/promise.js';
@@ -10,13 +11,19 @@ import Promise from '../utils/promise.js';
  * this should be implemented by the user
  */
 export default class Fetch {
+    url: string;
+    options: options;
+    native: XMLHttpRequest;
+    promiseFunction: Function;
+
+
     /**
      * Creates the Fetch instance
      *
      * @param url
      * @param options
      */
-    constructor(url, options = {}) {
+    constructor(url: string, options: options = {}): void {
         this.url = url;
         this.options = merge({
             method: 'GET',
@@ -36,8 +43,8 @@ export default class Fetch {
      * be overwritten by a subclass or can be
      * set with Fetch::setPromiseFunction()
      */
-    createPromiseFunction() {
-        this.promiseFunction = (resolve, reject) => {
+    createPromiseFunction(): void {
+        this.promiseFunction = (resolve: Function, reject: Function) => {
             this.native.onreadystatechange = () => {
                 if(this.native.readyState != 4) return;
 
@@ -59,7 +66,7 @@ export default class Fetch {
      * @throws {Error}
      * @returns {Fetch}
      */
-    setPromiseFunction(fn) {
+    setPromiseFunction(fn: Function): Fetch {
         if(!isFunction(fn)){
             throw new Error('Promise function must be a function.');
         }
@@ -73,18 +80,18 @@ export default class Fetch {
      *
      * @returns {Promise}
      */
-    promise() {
+    promise(): Promise {
         return new Promise(this.promiseFunction);
     }
 
     /**
      * Sets a header for the request
      *
-     * @param {String} header
-     * @param {String} value
+     * @param {string} header
+     * @param {string} value
      * @returns {Fetch}
      */
-    setHeader(header, value) {
+    setHeader(header: string, value: string): Fetch {
         this.native.setRequestHeader(header, value);
         return this;
     }
@@ -96,7 +103,7 @@ export default class Fetch {
      * @param {Function} callback
      * @returns {Fetch}
      */
-    before(callback) {
+    before(callback: Function): Fetch {
         if(!isFunction(callback)){
             throw new Error('Callback must be a function.');
         }
@@ -110,7 +117,7 @@ export default class Fetch {
      *
      * ONLY FOR INTERNAL USE
      */
-    open() {
+    open(): void {
         this.native.open(
             this.options.method,
             this.url,
@@ -127,7 +134,7 @@ export default class Fetch {
      * @param {*} data
      * @returns {Fetch}
      */
-    send(data) {
+    send(data: any): Fetch {
         this.open();
         if(isFunction(this.options.beforeSend)){
             this.options.beforeSend(this);
@@ -141,7 +148,7 @@ export default class Fetch {
      *
      * @returns {Fetch}
      */
-    abort() {
+    abort(): Fetch {
         this.native.abort();
         return this;
     }
@@ -152,7 +159,7 @@ export default class Fetch {
      *
      * @returns {string}
      */
-    response() {
+    response(): string {
         return this.native.responseText;
     }
 
@@ -162,7 +169,7 @@ export default class Fetch {
      *
      * Will fail when invalid string is provided
      */
-    jsonResponse() {
+    jsonResponse(): any {
         return JSON.parse(this.native.responseText);
     }
 }

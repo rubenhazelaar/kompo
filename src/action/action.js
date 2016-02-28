@@ -1,3 +1,4 @@
+// @flow
 import Component from '../component/Component.js';
 
 /**
@@ -17,10 +18,10 @@ import Component from '../component/Component.js';
  * @param {(undefined|*)} [scope]
  * @returns {Function}
  */
-export default function action(cb, ignoredStatefull, scope) {
-    return function(...args) {
-        const context = scope || this,
-            d = cb.call(context, ...args);
+export default function action(cb: Function, ignoredStatefull: ?statefull, scope: ?Component | any): Function {
+    return function(...args): boolean {
+        const context: Component | any = scope || this,
+            d: Do = cb.call(context, ...args);
 
         if(ignoredStatefull) {
             if(context instanceof Component) {
@@ -42,13 +43,15 @@ export default function action(cb, ignoredStatefull, scope) {
  * or not and saves that part of the state tree.
  */
 export class Do {
+    it: boolean;
+    part: state;
     /**
      * Creates Do
      *
      * @param {boolean} d - If state (part) has changed
      * @param {*} part - Part of state which is involved in the action
      */
-    constructor(d, part) {
+    constructor(d: boolean, part: state): void {
         this.it = d;
         this.part = part;
     }

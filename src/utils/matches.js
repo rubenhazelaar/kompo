@@ -1,11 +1,12 @@
+// @flow
 /**
  * Polyfills the matches function on Elements
  *
  * Used with event delegation in Components class
  */
-export default (function() {
+export default (function(): void {
     if (!Element.prototype.matches) {
-        const ep = Element.prototype;
+        const ep: Element = Element.prototype;
 
         if (ep.webkitMatchesSelector) // Chrome <34, SF<7.1, iOS<8
             ep.matches = ep.webkitMatchesSelector;

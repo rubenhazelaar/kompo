@@ -1,3 +1,4 @@
+// @flow
 import isObject from './../utils/isObject.js';
 
 /**
@@ -9,9 +10,9 @@ import isObject from './../utils/isObject.js';
  * @param {*} [scope]
  * @returns {Function}
  */
-export default function reaction(callback, scope) {
-    let previous;
-    return function(state, Component) {
+export default function reaction(callback: Function, scope: ?Component | any): statefull {
+    let previous: any;
+    return function(state: state, Component: Component) {
         const context = scope || this;
         if(
             isObject(previous)

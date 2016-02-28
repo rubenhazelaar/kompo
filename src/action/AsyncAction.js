@@ -1,3 +1,4 @@
+// @flow
 import Fetch from './../xhr/Fetch.js';
 //import isFunction from './../utils/isFunction.js';
 import RAF from './../utils/requestAnimationFrame.js';
@@ -8,6 +9,9 @@ import { Do } from './action.js';
  * and provides some help handling the request
  */
 export default class AsyncAction extends Fetch {
+    state: state;
+    Component: Component;
+
     /**
      * Creates the action callback and
      * injects the state and Component.
@@ -22,14 +26,14 @@ export default class AsyncAction extends Fetch {
      * @param {boolean} ignore
      * @returns {Function}
      */
-    when(callback, data, ignore = false) {
-        return (e, state, Component) => {
+    when(callback: Function, data: any, ignore: boolean = false): Function {
+        return (e: Event, state: state, Component: Component) => {
             if(ignore) {
                 Component.ignoredStatefull = callback;
             }
             this.state = state;
             this.Component = Component;
-            let result = callback(e, this, state, Component);
+            let result: Do | boolean = callback(e, this, state, Component);
             result = this.flagObject(result);
 
             if(result) {
@@ -47,7 +51,7 @@ export default class AsyncAction extends Fetch {
      * @param {*} state
      * @returns {AsyncAction}
      */
-    setState(state) {
+    setState(state: state): Component {
         this.state = state;
         return this;
     }
@@ -59,7 +63,7 @@ export default class AsyncAction extends Fetch {
      * @param {Component} Component
      * @returns {AsyncAction}
      */
-    setComponent(Component) {
+    setComponent(Component: Component): Component {
         this.Component = Component;
         return this;
     }
@@ -72,7 +76,7 @@ export default class AsyncAction extends Fetch {
      * @param {(boolean|Do)} result
      * @returns {boolean}
      */
-    flagObject(result) {
+    flagObject(result: Do | boolean): Do | boolean {
         if(result instanceof Do) {
             Object.defineProperty(result.part, '__kompo_stale__' , { writable: true,  value: result.it });
             return result.it;
@@ -116,15 +120,15 @@ export default class AsyncAction extends Fetch {
      * @param {(null|Function)} ignoredStatefull
      * @returns {Function}
      */
-    do(callback, ignoredStatefull = null) {
+    do(callback: Function, ignoredStatefull: ?statefull = null): Function {
         if(ignoredStatefull) {
             this.Component.ignoredStatefull = ignoredStatefull;
         }
         return (self) => {
-            let result = callback(self, this.state, this.Component);
+            let result: Do | any = callback(self, this.state, this.Component);
             result = this.flagObject(result);
             if(result) {
-                const root = this.Component.getRoot();
+                const root: Component = this.Component.getRoot();
                 if(root === null) {
                     RAF(this.Component.update.bind(this.Component));
                 } else {

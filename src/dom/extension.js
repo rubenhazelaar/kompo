@@ -1,3 +1,4 @@
+// @flow
 import capitalize from '../utils/capitalize';
 import Component from '../component/Component.js';
 import replace from './replace.js';
@@ -9,12 +10,12 @@ import isObject from '../utils/isObject.js';
  *
  * @param {string} prefix
  */
-export default function extension(prefix) {
+export default function extension(prefix: string): void {
     // Prevent lookups
-    const noPrefix = typeof prefix === 'undefined',
-        doc = document,
-        ElementPrototype = Element.prototype,
-        FragPrototype = DocumentFragment.prototype;
+    const noPrefix: boolean = typeof prefix === 'undefined',
+        doc: Document = document,
+        ElementPrototype: Element = Element.prototype,
+        FragPrototype: DocumentFragment = DocumentFragment.prototype;
 
     /**
      * Returns (prefixed) methodName
@@ -22,7 +23,7 @@ export default function extension(prefix) {
      * @param methodName
      * @returns {string}
      */
-    function addPrefix(methodName) {
+    function addPrefix(methodName: string): string {
         if(noPrefix) {
             return methodName;
         }
@@ -34,9 +35,9 @@ export default function extension(prefix) {
      *
      * @param {string} name
      * @param {*} value
-     * @returns {*|Element}
+     * @returns {string|Element}
      */
-    Object.defineProperty(ElementPrototype, addPrefix('attr'), { value: function (name, value) {
+    Object.defineProperty(ElementPrototype, addPrefix('attr'), { value: function (name: string, value: any): string | Element {
         if (arguments.length === 1) {
             return this.getAttribute(name);
         } else {
@@ -51,7 +52,7 @@ export default function extension(prefix) {
      * @param {string} name
      * @returns {boolean}
      */
-    Object.defineProperty(ElementPrototype, addPrefix('hasAttr'), { value: function (name) {
+    Object.defineProperty(ElementPrototype, addPrefix('hasAttr'), { value: function (name: string): boolean {
         return this.hasAttribute(name);
     }});
 
@@ -61,7 +62,7 @@ export default function extension(prefix) {
      * @param {string} name
      * @returns {Element}
      */
-    Object.defineProperty(ElementPrototype, addPrefix('removeAttr'), { value: function (name) {
+    Object.defineProperty(ElementPrototype, addPrefix('removeAttr'), { value: function (name: string): Element {
         this.removeAttribute(name);
         return this;
     }});
@@ -72,7 +73,7 @@ export default function extension(prefix) {
      * @param {string} txt
      * @returns {Element|Text}
      */
-    Object.defineProperty(ElementPrototype, addPrefix('txt'), { value: function (txt) {
+    Object.defineProperty(ElementPrototype, addPrefix('txt'), { value: function (txt: string): Element | string {
         if (arguments.length === 1) {
             this.appendChild(doc.createTextNode(txt));
             return this;
@@ -89,7 +90,7 @@ export default function extension(prefix) {
      * @returns {Element}
      */
     const appendFnName = addPrefix('append'),
-        appendFn = function (child, chain = true, ch = true) {
+        appendFn = function (child: KompoElement, chain: boolean | attributes = true, ch: boolean = true): Element {
             if (typeof child === 'string') {
                 child = doc.createElement(child);
             }
@@ -119,9 +120,11 @@ export default function extension(prefix) {
      * @param {boolean} chain
      * @returns {Element}
      */
-    Object.defineProperty(ElementPrototype, addPrefix('parentAppend'), { value: function (child, chain = true, ch = true) {
-        return this.parentNode.append(child, chain, ch);
-    }});
+    Object.defineProperty(ElementPrototype, addPrefix('parentAppend'), {
+        value: function (child: KompoElement, chain: boolean | attributes = true, ch: boolean = true): Element {
+            return this.parentNode.append(child, chain, ch);
+        }
+    });
 
     /**
      * Syntactic sugar for appending an cloned Element
@@ -133,7 +136,7 @@ export default function extension(prefix) {
      * @param {boolean} deep = deep copy or not
      * @returns {Element}
      */
-    Object.defineProperty(ElementPrototype, addPrefix('cloneAppend'), { value: function (deep = false ) {
+    Object.defineProperty(ElementPrototype, addPrefix('cloneAppend'), { value: function (deep: boolean = false ): Element {
         return this.parentNode.append(this.cloneNode(deep));
     }});
 
@@ -147,7 +150,7 @@ export default function extension(prefix) {
      * @returns {Element}
      */
     const cloneFnName = addPrefix('clone'),
-        cloneFn = function (deep = false ) {
+        cloneFn = function (deep: boolean = false ): Element {
             return this.cloneNode(deep);
         };
     Object.defineProperty(ElementPrototype, cloneFnName, { value: cloneFn });
@@ -161,7 +164,7 @@ export default function extension(prefix) {
      * @returns {Element}
      */
     const prependFnName = addPrefix('prepend'),
-        prependFn = function (child, chain = true, ch = true) {
+        prependFn = function (child: KompoElement, chain: boolean | attributes = true, ch: boolean = true): Element {
             let firstChild = this.firstChild;
 
             if (typeof child === 'string') {
@@ -194,7 +197,7 @@ export default function extension(prefix) {
      *
      * @returns {Element|Node}
      */
-    Object.defineProperty(ElementPrototype, addPrefix('parent'), { value: function () {
+    Object.defineProperty(ElementPrototype, addPrefix('parent'), { value: function (): Element | Node {
         return this.parentElement || this.parentNode;
     }});
 
@@ -204,7 +207,7 @@ export default function extension(prefix) {
      *
      * @returns {boolean}
      */
-    Object.defineProperty(ElementPrototype, addPrefix('hasParent'), { value: function () {
+    Object.defineProperty(ElementPrototype, addPrefix('hasParent'), { value: function (): boolean {
         return !(this.parentElement === null && this.parentNode === null);
     }});
 
@@ -213,7 +216,7 @@ export default function extension(prefix) {
      *
      * @returns {Element|Node}
      */
-    Object.defineProperty(ElementPrototype, addPrefix('root'), { value: function (parent) {
+    Object.defineProperty(ElementPrototype, addPrefix('root'), { value: function (parent: ?Element | Node): Element | Node {
         parent = !parent?
         this.parentElement || this.parentNode:
             parent;
@@ -232,7 +235,7 @@ export default function extension(prefix) {
      * @returns {Element}
      */
     const queryFnName = addPrefix('query'),
-        queryFn = function (selector) {
+        queryFn = function (selector: string): Element {
             return this.querySelector(selector);
         };
     Object.defineProperty(ElementPrototype, queryFnName, { value: queryFn });
@@ -242,10 +245,10 @@ export default function extension(prefix) {
      * Syntactic sugar for document.querySelectorAll()
      *
      * @param {string} selector
-     * @returns {HTMLCollection}
+     * @returns {NodeList}
      */
     const queryAllFnName = addPrefix('queryAll'),
-        queryAllFn = function (selector) {
+        queryAllFn = function (selector: string): NodeList {
             return this.querySelectorAll(selector);
         };
     Object.defineProperty(ElementPrototype, queryAllFnName, { value:queryAllFn });
@@ -253,13 +256,11 @@ export default function extension(prefix) {
 
     /**
      * Syntactic sugar/polyfill for Element.remove()
-     *
-     * @returns {Element}
      */
     if (!('remove' in ElementPrototype)) {
         Object.defineProperty(ElementPrototype, addPrefix('remove'), {
-            value: function () {
-                let parent = this.parentNode;
+            value: function (): void {
+                let parent: Node = this.parentNode;
                 if (parent) {
                     parent.removeChild(this);
                 }
@@ -268,12 +269,12 @@ export default function extension(prefix) {
     }
 
     /**
-     * Syntactic sugar for removing all child Elements\Nodes
+     * Syntactic sugar for removing all child Elements|Nodes
      *
-     * @returns {Element}
+     * @returns {Node}
      */
     const emptyFnName = addPrefix('empty'),
-        emptyFn = function () {
+        emptyFn = function (): Node {
             while (this.lastChild) {
                 this.removeChild(this.lastChild);
             }
@@ -288,9 +289,9 @@ export default function extension(prefix) {
      * When chain methods it can be used to log an Element
      * right in the middle of the chain.
      *
-     * @returns {Element}
+     * @returns {Node}
      */
-    Object.defineProperty(ElementPrototype, addPrefix('log'), { value: function () {
+    Object.defineProperty(ElementPrototype, addPrefix('log'), { value: function (): Node {
         console.log(this);
         return this;
     }});
@@ -298,9 +299,11 @@ export default function extension(prefix) {
     /**
      * @see ./replace.js
      */
-    Object.defineProperty(ElementPrototype, addPrefix('replace'), { value: function (child, replaceLastChild = false) {
-        return replace(this, child, replaceLastChild);
-    }});
+    Object.defineProperty(ElementPrototype, addPrefix('replace'), {
+        value: function (child: KompoElement, replaceLastChild: boolean = false): Node {
+            return replace(this, child, replaceLastChild);
+        }
+    });
 
     /**
      * Syntactic sugar for replacing the
@@ -308,20 +311,22 @@ export default function extension(prefix) {
      *
      * BEWARE: a parent Element must exist
      *
-     * @returns {Element} - return the new Element
+     * @returns {Node} - return the new Element
      */
-    Object.defineProperty(ElementPrototype, addPrefix('replaceWith'), { value: function (newElement, attributes) {
-        if (typeof newElement === 'string') {
-            newElement = doc.createElement(newElement);
-        }
+    Object.defineProperty(ElementPrototype, addPrefix('replaceWith'), {
+        value: function (newElement: KompoElement, attributes: ?attributes): Node {
+            if (typeof newElement === 'string') {
+                newElement = doc.createElement(newElement);
+            }
 
-        if(typeof attributes !== 'undefined') {
-            addAttributes(newElement, attributes);
-        }
+            if(typeof attributes !== 'undefined') {
+                addAttributes(newElement, attributes);
+            }
 
-        this.parentNode.replaceChild(this, newElement);
-        return newElement;
-    }});
+            this.parentNode.replaceChild(this, newElement);
+            return newElement;
+        }
+    });
 
     /**
      * Syntactic sugar for inserting an Element
@@ -329,28 +334,30 @@ export default function extension(prefix) {
      *
      * BEWARE: a parenNode needs to be available
      *
-     * @returns {Element} - the new Element
+     * @returns {Node} - the new Element
      */
-    Object.defineProperty(ElementPrototype, addPrefix('before'), { value: function (newSibling, attributes) {
-        let parentNode = this.parentNode;
+    Object.defineProperty(ElementPrototype, addPrefix('before'), {
+        value: function (newSibling: KompoElement, attributes: ?attributes): Node {
+            let parentNode: Node = this.parentNode;
 
-        if (typeof newSibling === 'string') {
-            newSibling = doc.createElement(newSibling);
-        }
+            if (typeof newSibling === 'string') {
+                newSibling = doc.createElement(newSibling);
+            }
 
-        if(newSibling instanceof Component) {
-            newSibling = newSibling.render()
-        }
+            if(newSibling instanceof Component) {
+                newSibling = newSibling.render()
+            }
 
-        if(typeof attributes !== 'undefined') {
-            addAttributes(newSibling, attributes);
-        }
+            if(typeof attributes !== 'undefined') {
+                addAttributes(newSibling, attributes);
+            }
 
-        if (parentNode) {
-            parentNode.insertBefore(newSibling, this);
+            if (parentNode) {
+                parentNode.insertBefore(newSibling, this);
+            }
+            return newSibling;
         }
-        return newSibling;
-    }});
+    });
 
     /**
      * Syntactic sugar for inserting an Element
@@ -358,34 +365,36 @@ export default function extension(prefix) {
      *
      * BEWARE: a parenNode needs to be available
      *
-     * @returns {Element} - the new Element
+     * @returns {Node} - the new Element
      */
-    Object.defineProperty(ElementPrototype, addPrefix('after'), { value: function (newSibling, attributes) {
-        let parentNode = this.parentNode,
-            nextSibling = this.nextSibling;
+    Object.defineProperty(ElementPrototype, addPrefix('after'), {
+        value: function (newSibling: KompoElement, attributes: attributes): Node {
+            let parentNode: Node = this.parentNode,
+                nextSibling: Node = this.nextSibling;
 
-        if (typeof newSibling === 'string') {
-            newSibling = doc.createElement(newSibling);
-        }
-
-        if(newSibling instanceof Component) {
-            newSibling = newSibling.render()
-        }
-
-        if(typeof attributes !== 'undefined') {
-            addAttributes(newSibling, attributes);
-        }
-
-        if (parentNode) {
-            if (nextSibling) {
-                parentNode.insertBefore(newSibling, nextSibling);
-            } else {
-                parentNode.appendChild(newSibling);
+            if (typeof newSibling === 'string') {
+                newSibling = doc.createElement(newSibling);
             }
-        }
 
-        return newSibling;
-    }});
+            if(newSibling instanceof Component) {
+                newSibling = newSibling.render()
+            }
+
+            if(typeof attributes !== 'undefined') {
+                addAttributes(newSibling, attributes);
+            }
+
+            if (parentNode) {
+                if (nextSibling) {
+                    parentNode.insertBefore(newSibling, nextSibling);
+                } else {
+                    parentNode.appendChild(newSibling);
+                }
+            }
+
+            return newSibling;
+        }
+    });
 
     /**
      * Syntactic sugar for getting/setting the id
@@ -394,7 +403,7 @@ export default function extension(prefix) {
      * @param {*} id
      * @returns {string|Element}
      */
-    Object.defineProperty(ElementPrototype, addPrefix('i'), { value: function (id) {
+    Object.defineProperty(ElementPrototype, addPrefix('i'), { value: function (id: string): string | Element {
         if (arguments.length === 0) {
             return this.id;
         } else {
@@ -410,7 +419,7 @@ export default function extension(prefix) {
      * @param {*} name
      * @returns {string|Element}
      */
-    Object.defineProperty(ElementPrototype, addPrefix('n'), { value: function (name) {
+    Object.defineProperty(ElementPrototype, addPrefix('n'), { value: function (name: string): string | Element {
         if (arguments.length === 0) {
             return this.name;
         } else {
@@ -426,7 +435,7 @@ export default function extension(prefix) {
      * @param {*} href
      * @returns {string|Element}
      */
-    Object.defineProperty(ElementPrototype, addPrefix('h'), { value: function (href) {
+    Object.defineProperty(ElementPrototype, addPrefix('h'), { value: function (href: string): string | Element {
         if (arguments.length === 0) {
             return this.href;
         } else {
@@ -442,7 +451,7 @@ export default function extension(prefix) {
      * @param {*} value
      * @returns {string|Element}
      */
-    Object.defineProperty(ElementPrototype, addPrefix('v'), { value: function (value) {
+    Object.defineProperty(ElementPrototype, addPrefix('v'), { value: function (value: string): string | Element {
         if (arguments.length === 0) {
             return this.value;
         } else {

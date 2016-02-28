@@ -1,3 +1,4 @@
+// @flow
 /**
  * Checks if `value` is the language type of `Object`.
  * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
@@ -20,9 +21,9 @@
  * _.isObject(1);
  * // => false
  */
-export default function isObject(value) {
+export default function isObject(value: any): boolean {
     // Avoid a V8 JIT bug in Chrome 19-20.
     // See https://code.google.com/p/v8/issues/detail?id=2291 for more details.
-    var type = typeof value;
+    let type = typeof value;
     return type == 'function' || (value && type == 'object') || false;
 }

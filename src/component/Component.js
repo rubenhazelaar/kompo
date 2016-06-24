@@ -329,6 +329,15 @@ export default class Component {
     }
 
     /**
+     * Check if the component has a nest callback
+     * 
+     * @returns {boolean}
+     */
+    hasNest(): boolean {
+        return isFunction(this.nestCallback);
+    }
+
+    /**
      * Adds an event listener or delegated event listener
      * to the provided element and triggers the update cycle
      * on its root component.

@@ -89,7 +89,7 @@ const routes = new Route('/', new App, [
 const state = {};
 
 // Create router and set a not found Callback
-const router = new Router(state, routes, '/kompo/examples/router/', {
+const router = new Router(state, routes, '/examples/router', {
     notFoundCallback: function(url) {
         alert('Url: ' + url + ' not found');
     }

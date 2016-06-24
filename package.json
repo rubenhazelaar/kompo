@@ -19,7 +19,8 @@
     "examples:build": "./node_modules/.bin/webpack",
     "examples:watch": "./node_modules/.bin/webpack -w",
     "lint": "./node_modules/.bin/eslint ./src/**",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "start": "./node_modules/.bin/http-server /usr/src/app"
   },
   "keywords": [
     "react",
@@ -51,6 +52,7 @@
     "eslint": "1.10.3",
     "eslint-loader": "1.2.0",
     "eslint-plugin-flowtype": "^2.1.0",
+    "http-server": "^0.9.0",
     "karma": "0.13.19",
     "karma-chai": "0.1.0",
     "karma-chrome-launcher": "0.2.2",

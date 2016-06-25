@@ -1,6 +1,7 @@
 // Component and content creation classes and functions
 import Component from '../../../src/component/Component.js';
 import c, { createText } from '../../../src/dom/create.js';
+import throttle from '../../../src/utils/throttle';
 import addExtensions from '../../../src/dom/extension.js';
 addExtensions(); // Initialize without prefix
 
@@ -15,13 +16,13 @@ class App extends Component {
             input = c('input');
 
         // Event listener, trigger update on keyup
-        this.on(input, 'keyup', (e, state) => {
+        this.on(input, 'keyup', throttle(this,(e, state) => {
             if(state.name != e.target.value) {
                 state.name = e.target.value;
                 return true; // If value has changed return true
             }
             return false; // This could be omitted
-        });
+        }));
 
         // Statefull element, changes when an update is triggered by the event listener above
         this.react((state) => {

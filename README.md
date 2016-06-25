@@ -64,7 +64,7 @@ The following example covers the basic functionalities of Kompo:
 ```javascript 
 // Component and content creation classes and functions
 import Component from 'kompo';
-import { create, createText } from 'kompo';
+import { create, createText, throttle } from 'kompo';
 import { addExtensions } from 'kompo';
 addExtensions(); // Initialize without prefix
 
@@ -79,13 +79,13 @@ class App extends Component {
             input = create('input');
 
         // Event listener, trigger update on keyup
-        this.on(input, 'keyup', (e, state) => {
+        this.on(input, 'keyup', throttle(this,(e, state) => {
             if(state.name != e.target.value) {
                 state.name = e.target.value;
                 return true; // If value has changed return true
             }
             return false; // This could be omitted
-        });
+        }));
 
         // Statefull element, changes when an update is triggered by the event listener above
         this.react((state) => {

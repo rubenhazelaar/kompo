@@ -15,6 +15,7 @@ export default class Fetch {
     options: options;
     native: XMLHttpRequest;
     promiseFunction: Function;
+    headers: { [key: string]: string };
 
 
     /**
@@ -92,7 +93,7 @@ export default class Fetch {
      * @returns {Fetch}
      */
     setHeader(header: string, value: string): Fetch {
-        this.native.setRequestHeader(header, value);
+        this.headers[header] = value;
         return this;
     }
 
@@ -135,7 +136,22 @@ export default class Fetch {
      * @returns {Fetch}
      */
     send(data: any): Fetch {
+        if(this.options.withCredentials === true) {
+            this.native.withCredentials = true;
+        }
+
         this.open();
+
+        if(typeof this.options.responseType !== 'undefined') {
+            this.native.responseType = this.options.responseType;
+        }
+
+        const keys = Object.keys(this.headers);
+        for(let i = 0, l = keys.length; i < l; ++i) {
+            const k = keys[i];
+            this.native.setRequestHeader(k, this.headers[k]);
+        }
+
         if(isFunction(this.options.beforeSend)){
             this.options.beforeSend(this);
         }
@@ -171,5 +187,17 @@ export default class Fetch {
      */
     jsonResponse(): any {
         return JSON.parse(this.native.responseText);
+    }
+
+    /**
+     * Adds eventlistener to native XHR
+     *
+     * Can be used for progress event for example
+     *
+     * @param name {string}
+     * @param callback {Function}
+     */
+    on(name: string, callback: Function): void {
+        this.native.addEventListener(name, callback);
     }
 }

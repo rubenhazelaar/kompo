@@ -4,7 +4,7 @@ Kompo is a react js like library which tries to stay as simple as possible. No v
 Kompo loves the DOM & makes it possible to build interfaces through components.
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/rubenhazelaar/kompo/master/LICENSE)
-[![Travis](https://img.shields.io/travis/rust-lang/rust.svg?style=flat-square)]()
+[![Build Status](https://travis-ci.org/rubenhazelaar/kompo.svg?branch=master)](https://travis-ci.org/rubenhazelaar/kompo)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square)](http://commitizen.github.io/cz-cli/)
 [![Dependency Status](https://david-dm.org/rubenhazelaar/kompo.svg?style=flat-square)](https://david-dm.org/rubenhazelaar/kompo)
 [![devDependency Status](https://david-dm.org/rubenhazelaar/kompo/dev-status.svg?style=flat-square)](https://david-dm.org/rubenhazelaar/kompo#info=devDependencies)

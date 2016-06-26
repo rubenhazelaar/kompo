@@ -1,16 +1,17 @@
 // @flow
 import Component from '../component/Component';
-import RAF from './requestAnimationFrame';
+import rerender from '../component/rerender';
 
 /**
  * Debounces a function call
  *
+ * @param {Component} C 
  * @param {Function} fn - function to debounce
  * @param {Number} delay - timeout for debouncing
  * @param {Object} scope
  * @returns {Function}
  */
-export default function debounce(c: Component, fn: Function, delay: number, scope: any): Function {
+export default function debounce(C: Component, fn: Function, delay: number, scope: any): Function {
     let timer: ?number = null;
     return function() {
         const context: any = scope || this,
@@ -19,12 +20,7 @@ export default function debounce(c: Component, fn: Function, delay: number, scop
         timer = setTimeout(function() {
             const res = fn.apply(context, args);
             if(res) {
-                const root = c.getRoot();
-                if(root === null) {
-                    RAF(c.update.bind(c));
-                } else {
-                    RAF(root.update.bind(root));
-                }
+                rerender(C);
             }
         }, delay);
     };

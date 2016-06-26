@@ -13,6 +13,11 @@ export default class Leaf extends Component {
             .append(heading, false)
             .append(span);
 
+        if(this.props.input) {
+            this.input = c('input');
+            root.append(this.input);
+        }
+
         // Show parameter if it is set
         this.react((state) => {
             const params = state.Router.params;
@@ -23,6 +28,13 @@ export default class Leaf extends Component {
 
         // Return root
         return root;
+    }
+    
+    afterRender() {
+        // Perform check if input is available
+        if(typeof this.input !== 'undefined') {
+            this.input.focus();
+        }
     }
 }
 

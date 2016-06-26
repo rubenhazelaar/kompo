@@ -1,6 +1,7 @@
 // Component and content creation classes and functions
 import Component from '../../../src/component/Component.js';
 import c, { createText } from '../../../src/dom/create.js';
+import init from '../../../src/component/init';
 import addExtensions from '../../../src/dom/extension.js';
 addExtensions(); // Could add with prefix
 
@@ -72,7 +73,8 @@ const routes = new Route('/', new App, [
     }))
     ,new Route('branch', new Branch, [
         new IndexRoute(new Leaf({
-            heading: 'Nested index component'
+            heading: 'Nested index component',
+            input: true
         }))
         ,new Route('simple', new Leaf({
             heading: 'Nested simple component'
@@ -100,5 +102,4 @@ const app = router.getComponent(null);
 // Set the state (including the router) to the root component
 app.setState(state);
 // And append to body
-document.body.append(app);
-
+init(document.body, app);

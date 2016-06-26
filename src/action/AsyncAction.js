@@ -1,8 +1,7 @@
 // @flow
-import Fetch from './../xhr/Fetch.js';
-//import isFunction from './../utils/isFunction.js';
-import RAF from './../utils/requestAnimationFrame.js';
-import { Do } from './action.js';
+import Fetch from '../xhr/Fetch';
+import rerender from '../component/rerender';
+import { Do } from './action';
 
 /**
  * Represents an asynchronous XHR request
@@ -128,12 +127,7 @@ export default class AsyncAction extends Fetch {
             let result: Do | any = callback(self, this.state, this.Component);
             result = this.flagObject(result);
             if(result) {
-                const root: Component = this.Component.getRoot();
-                if(root === null) {
-                    RAF(this.Component.update.bind(this.Component));
-                } else {
-                    RAF(root.update.bind(root));
-                }
+                rerender(this.Component);
             }
         };
     }

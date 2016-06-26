@@ -1,8 +1,8 @@
 // @flow
-import RAF from '../utils/requestAnimationFrame.js';
 import merge from '../utils/merge.js';
 import replace from '../dom/replace.js';
 import isFunction from '../utils/isFunction.js';
+import rerender from './rerender';
 import matches from '../utils/matches.js'; // Self-executing
 
 /**
@@ -37,6 +37,7 @@ export default class Component {
     ignoredStatefull: statefull;
     nestCallback: nestCallback;
     level: ?number; // Used in Router
+    routedMount: ?Component;
 
     /**
      * MAY be overridden, make sure to pass properties to the
@@ -129,6 +130,30 @@ export default class Component {
             this.ignoredStatefull = undefined;
         }
     }
+
+    /**
+     * IMPORTANT: Only for internal use
+     * 
+     * Is triggered after a (re)render cycle
+     */
+    after(): void {
+        for(let i = 0, l = this.mounts.length; i < l; i++) {
+            const Component: Component = this.mounts[i];
+            if(Component.stateless || Component.isolated) continue;
+            Component.after();
+        }
+
+        if(this.routedMount instanceof Component) {
+            this.routedMount.after();
+        }
+
+        this.afterRender();
+    }
+
+    /**
+     * Can be overloaded, to trigger afterRender actions.
+     */
+    afterRender() {}
 
     /**
      * Registers a statefull child component by:
@@ -251,6 +276,8 @@ export default class Component {
                     replace(parent, Component);
                 }
             }
+
+            this.routedMount = Component;
 
             return Component;
         });
@@ -531,11 +558,6 @@ function eventListenerCallback(Component: Component, fn: Function, e: Event, sta
         fn.call(Component, e[0], e[1], state, ChildComponent):
         fn.call(Component, e, state, ChildComponent);
     if(res) {
-        const root = Component.getRoot();
-        if(root === null) {
-            RAF(Component.update.bind(Component));
-        } else {
-            RAF(root.update.bind(root));
-        }
+        rerender(Component);
     }
 }

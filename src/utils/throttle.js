@@ -1,15 +1,17 @@
+// @flow
 import Component from '../component/Component';
-import RAF from './requestAnimationFrame';
+import rerender from '../component/rerender';
 
 /**
  * Throttle function
  *
+ * @param {Component} C
  * @param {Function} fn - function to throttle
  * @param {Number} threshold - timeout for throttling
  * @param {Object} scope
  * @returns {Function}
  */
-export default function throttle(c: Component, fn: Function, threshold: number, scope: any) {
+export default function throttle(C: Component, fn: Function, threshold: number, scope: any) {
     threshold || (threshold = 250);
     let last,
         deferTimer;
@@ -24,12 +26,7 @@ export default function throttle(c: Component, fn: Function, threshold: number, 
                 last = now;
                 const res = fn.apply(context, args);
                 if(res) {
-                    const root = c.getRoot();
-                    if(root === null) {
-                        RAF(c.update.bind(c));
-                    } else {
-                        RAF(root.update.bind(root));
-                    }
+                    rerender(C);
                 }
             }, threshold);
         } else {

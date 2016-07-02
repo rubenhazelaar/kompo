@@ -33,6 +33,10 @@ export default class Fetch {
             password: '',
             beforeSend: null
         }, options);
+        this.headers = {};
+        if(this.options.withCredentials === true) {
+            this.native.withCredentials = true;
+        }
         this.native = new XMLHttpRequest();
         // Create default promise function
         this.createPromiseFunction();
@@ -136,10 +140,6 @@ export default class Fetch {
      * @returns {Fetch}
      */
     send(data: any): Fetch {
-        if(this.options.withCredentials === true) {
-            this.native.withCredentials = true;
-        }
-
         this.open();
 
         if(typeof this.options.responseType !== 'undefined') {

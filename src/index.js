@@ -24,7 +24,7 @@ export default Component;
 
 export {
     Collection,
-    create, createFragment, createText, addAttributes
+    create, createFragment, createText, addAttributes,
     addExtension,
     replace,
     Router, Route, IndexRoute,

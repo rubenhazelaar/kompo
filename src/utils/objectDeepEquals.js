@@ -35,9 +35,6 @@ export default function objectDeepEquals(obj1: { [key: any]: any }, obj2: { [key
         else if (typeof obj1[propName] != typeof obj2[propName]) {
             return false;
         }
-        //If the property is inherited, do not check any more (it must be equa if both objects inherit it)
-        if(!this.hasOwnProperty(propName))
-            continue;
 
         //Now the detail check and recursion
 

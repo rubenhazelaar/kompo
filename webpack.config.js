@@ -1,6 +1,5 @@
 var webpack = require("webpack"),
     DedupePlugin = webpack.optimize.DedupePlugin,
-    CommonsChunkPlugin = webpack.optimize.CommonsChunkPlugin,
     Clean = require('clean-webpack-plugin'),
     path = require('path'),
     fs = require('fs'),
@@ -17,8 +16,8 @@ var config = {
         'examples/helloWorld/dist/helloWorld-bundle': './examples/helloWorld/src/helloWorld.js',
         'examples/extendedHelloWorld/dist/extendedHelloWorld-bundle': './examples/extendedHelloWorld/src/extendedHelloWorld.js',
         'examples/router/dist/router-bundle': './examples/router/src/router.js',
-        'examples/todo/dist/todo-bundle': './examples/todo/src/todo.js',
-        'examples/ajax/dist/ajax-bundle': './examples/ajax/src/ajax.js'
+        // 'examples/todo/dist/todo-bundle': './examples/todo/src/todo.js',
+        // 'examples/ajax/dist/ajax-bundle': './examples/ajax/src/ajax.js'
     },
     output: {
         path: './',
@@ -40,7 +39,6 @@ var config = {
         ]
     },
     plugins: [
-        new webpack.OldWatchingPlugin(),
         new DedupePlugin()
     ]
 };

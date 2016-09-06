@@ -1,55 +1,35 @@
-// Component and content creation classes and functions
-import Component from '../../../src/component/Component.js';
-import c, { createText } from '../../../src/dom/create.js';
-import throttle from '../../../src/utils/throttle';
-import addExtensions from '../../../src/dom/extension.js';
-addExtensions(); // Initialize without prefix
+import component, {react} from '../../../src/component/component';
+import dispatch from '../../../src/state/dispatch';
+import app from '../../../src/state/app';
 
-// Setup root component
-class App extends Component {
-    create() {
-        // Create elements
-        const root = c(),
-            h1 = c('h1', {
-                id: 'Primary heading' // Set attributes through an object
-            }),
-            input = c('input');
+const hello = component('div', function({name}) {
+    const h1 = document.createElement('h1'),
+        input = document.createElement('input');
 
-        // Event listener, trigger update on keyup
-        this.on(input, 'keyup', throttle(this,(e, state) => {
-            if(state.name != e.target.value) {
-                state.name = e.target.value;
-                return true; // If value has changed return true
-            }
-            return false; // This could be omitted
-        }));
-
-        // Statefull element, changes when an update is triggered by the event listener above
-        this.react((state) => {
-            const name = typeof state.name !== 'undefined' && state.name !== ''? state.name: this.props.name;
-            h1.replace(createText('Hello world, this is ' + name));
+    input.addEventListener('keyup', () => {
+        dispatch(this, state => {
+            state.name = input.value;
         });
+    });
 
-        // Append children to root
-        root
-            .append(h1, {
-               'data-heading': 'Primary heading' // Add more attributes on append
-            }, false)
-            .append('p').txt('Type your name to say "Hello world": ')
-                .append(input);
+    react(this, state => {
+        h1.textContent = 'Hello world, this is ' + (state.name? state.name: name);
+    });
 
-        // Return the root
-        return root;
-    }
-}
-
-// Set a name as default property
-App.defaultProps = {
+    this.appendChild(h1);
+    this.appendChild(input);
+},{
     name: 'Kompo'
+});
+
+// Setup state
+const state = {
+    name: ''
 };
 
-// Append component to body; notice the empty state
-// and how it is used together with a default property
-// in the react callback above
-document.body.append(new App().setState({}));
+// Create instance of component
+// and initialize application with state
+const a = app(hello(), state);
 
+// Kick-off app and append to body
+document.body.appendChild(a.start());

@@ -14,8 +14,8 @@
     "test": "./node_modules/.bin/karma start --single-run",
     "build": "npm run build:cjs && npm run build:umd && npm run build:min",
     "build:cjs": "./node_modules/.bin/babel ./src -d lib",
-    "build:umd": "./node_modules/.bin/webpack --entry ./src/index.js --output-filename ./umd/Kompo.js",
-    "build:min": "./node_modules/.bin/webpack -p --entry ./src/index.js --output-filename ./umd/Kompo.min.js",
+    "build:umd": "./node_modules/.bin/webpack --entry ./src/index.js --output-filename ./umd/kompo.js",
+    "build:min": "./node_modules/.bin/webpack -p --entry ./src/index.js --output-filename ./umd/kompo.min.js",
     "examples:build": "./node_modules/.bin/webpack",
     "examples:watch": "./node_modules/.bin/webpack -w",
     "lint": "./node_modules/.bin/eslint ./src/**",
@@ -52,7 +52,6 @@
     "eslint": "1.10.3",
     "eslint-loader": "1.2.0",
     "eslint-plugin-flowtype": "^2.1.0",
-    "http-server": "^0.9.0",
     "karma": "0.13.19",
     "karma-chai": "0.1.0",
     "karma-chrome-launcher": "0.2.2",
@@ -67,12 +66,12 @@
     "sinon": "1.17.2",
     "webpack": "1.12.11"
   },
-  "dependencies": {
-    "promise": "7.1.1"
-  },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
+  },
+  "dependencies": {
+    "node-static": "^0.7.8"
   }
 }

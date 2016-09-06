@@ -1,27 +1,20 @@
-import Component from '../../../../src/component/Component.js';
-import c, { createText } from '../../../../src/dom/create.js';
+import component, {react, getRouter} from '../../../../src/component/component';
+import {swap} from '../../../../src/router/router';
 
-export default class Branch extends Component {
-    create() {
-        // Create Elements
-        const root = c(),
-            heading = c('h2').txt(this.props.heading),
-            content = c('div');
-        content.classList.add('content');
+export default component('div', function ({heading}) {
+    this.setAttribute('data-type', 'Branch');
+    
+    // Create Elements
+    const h2 = document.createElement('h2');
+    h2.textContent = heading;
 
-        // Append children
-        root
-            .append(heading, false)
-            .append(content);
+    // Append children
+    this.appendChild(h2);
 
-        // Attach the routed Component to the content div
-        this.mountRoutedComponent(content);
-
-        // Return root
-        return root;
-    }
-}
-
-Branch.defaultProps = {
+    const r = getRouter(this);
+    react(this, () => {
+        swap(this, r);
+    });
+}, {
     heading: 'Branch component'
-};
+});

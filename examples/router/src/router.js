@@ -1,5 +1,5 @@
 // Component and content creation classes and functions
-import component, {react, getRouter} from '../../../src/component/component';
+import construct, {react, getRouter} from '../../../src/component/component';
 import dispatch from '../../../src/state/dispatch';
 import app from '../../../src/state/app';
 
@@ -11,8 +11,8 @@ import router, {route, indexRoute, swap} from '../../../src/router/router';
 import leaf from './components/leaf';
 import branch from './components/branch';
 
-// Create root component for navigation
-const root = component('div', function () {
+// Create root construct for navigation
+const root = construct('div', function () {
     const h1 = document.createElement('h1'),
         nav = document.createElement('nav'),
         links = [
@@ -47,7 +47,7 @@ const root = component('div', function () {
     this.appendChild(nav);
 
     // On update swap the new 
-    // routed component
+    // routed construct
     react(this, () => {
         swap(this, r);
     });
@@ -57,25 +57,25 @@ const root = component('div', function () {
 const routes = route('/', root(), [
     // Each route array needs a IndexRoute
     indexRoute(leaf({
-        heading: 'Index component'
+        heading: 'Index construct'
     }))
     , route('simple', leaf({
-        heading: 'Simple component'
+        heading: 'Simple construct'
     }))
     , route('param/:param', leaf({
         heading: 'Route with a param, shown in Component'
     }))
     , route('branch', branch(), [
         indexRoute(leaf({
-            heading: 'Nested index component',
+            heading: 'Nested index construct',
             input: true
         }))
         , route('simple', leaf({
-            heading: 'Nested simple component'
+            heading: 'Nested simple construct'
         }))
-        // Url is very simple, although it is a nested component
+        // Url is very simple, although it is a nested construct
         , route('/rooted_nested', leaf({
-            heading: 'Rooted nested component'
+            heading: 'Rooted nested construct'
         }))
     ])
 ]);
@@ -90,14 +90,16 @@ const r = router({
     base: 'router',
     notFoundCallback: function (url) {
         alert('Url: ' + url + ' not found');
+        // Always throw an error to interrupt the update cycle
+        throw new Error('Url: ' + url + ' not found');
     }
 });
 
-// Get the root component from the router
+// Get the root construct from the router
 const ro = r.get();
 
 // Append to body
 document.body.appendChild(ro);
 
-// Set the state (including the router) to the root component
+// Set the state (including the router) to the root construct
 app(ro, state, r).start();

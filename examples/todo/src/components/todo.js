@@ -1,30 +1,46 @@
-import component, {getRouter, react} from '../../../../src/component/component';
+import construct, {react} from '../../../../src/component/component';
+import dispatch from  '../../../../src/state/dispatch';
 
-export default component('div', function ({heading, paramIndex}) {
-    this.setAttribute('data-type', 'Leaf');
+export default construct('li', function ({defaultClass, deleteClass}) {
+    const todo = document.createElement('a'),
+        del = document.createElement('a');
+    
+    this.classList.add(defaultClass);
+    del.textContent = 'x';
+    del.classList.add(deleteClass);
+    
+    todo.addEventListener('click', e => {
+        e.preventDefault();
+        dispatch(this, state => {
+            state.done = !state.done;
+        });
+    });
 
-    // Create Elements
-    const h2 = document.createElement('h2'),
-        span = document.createElement('span');
+    del.addEventListener('click', e => {
+        e.preventDefault();
+        remove(this);
+    });
 
-    h2.textContent = heading;
-
-    // Append children
-    this.appendChild(h2);
-    this.appendChild(span);
-
-    const r = getRouter(this);
-
-    // Show parameter if it is set
-    react(this, () => {
-        const params = r.getParams();
-        if (params.length > 0) {
-            span.textContent = 'Param at index ' + paramIndex + ' = ' + params[paramIndex];
+    react(this, state => {
+        todo.textContent = state.description;
+        if (state.done) {
+            this.classList.add('Todo--isCompleted');
+        } else {
+            this.classList.remove('Todo--isCompleted');
         }
     });
 
-}
-, {
-    heading: 'Leaf component',
-    paramIndex: 0
+    this.appendChild(todo);
+    this.appendChild(del);
+}, {
+    defaultClass: 'Todo',
+    deleteClass: 'TodoDelete',
+    description: ''
 });
+
+function remove(Element):void {
+    let parent:Node = Element.parentNode;
+    if (parent) {
+        parent.removeChild(Element);
+    }
+}

@@ -1,7 +1,7 @@
-import component, {react, getRouter, hasSlot, slot, mount} from '../component/component';
+import construct, {react, getRouter, hasSlot, slot, mount} from '../component/component';
 import dispatch from '../state/dispatch';
 
-export default component('a', function ({
+export default construct('a', function ({
     url, child, classNames, data, title, defaultEvent, activeClass, onClick
 }) {
     // First add classes
@@ -22,7 +22,7 @@ export default component('a', function ({
     this.setAttribute('href', url);
 
     if (typeof child === 'string') {
-        this.appendChild(document.createTextNode(child));
+        this.textContent = child;
     } else if (child.hasOwnProperty('kompo')) {
         mount(this, child);
     } else if (child instanceof Node) {

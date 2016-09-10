@@ -18,6 +18,14 @@ export default function observe(obj:any) {
     if (!hasProxy) {
         obj = observeObjectFallback(obj);
     } else {
+        const keys = Object.keys(obj);
+        for (let i = 0, l = keys.length; i < l; ++i) {
+            const key = keys[i];
+            if (reservedKeys.indexOf(key) === -1) {
+                obj[key] = observe(obj[key]);
+            }
+        }
+
         if (isArray) {
             obj = new Proxy(obj, {
                 apply: function (target, thisArg, argumentList) {
@@ -29,10 +37,15 @@ export default function observe(obj:any) {
                     return true;
                 },
                 set: function (target, prop, val) {
-                    if (val != target[prop] && target.__kompo_dirty__.indexOf(prop) === -1) {
+                    if (
+                        prop !== '__kompo_dirty__'
+                        && val != target[prop]
+                        && target.__kompo_dirty__.indexOf(prop) === -1
+                    ) {
                         target.__kompo_dirty__.push(prop);
                     }
-                    target[prop] = val;
+
+                    target[prop] = observe(val);
                     return true;
                 }
             });
@@ -42,22 +55,18 @@ export default function observe(obj:any) {
                     return target[prop];
                 },
                 set: function (target, prop, val) {
-                    if (val != target[prop] && target.__kompo_dirty__.indexOf(prop) === -1) {
+                    if (
+                        prop !== '__kompo_dirty__'
+                        && val != target[prop]
+                        && target.__kompo_dirty__.indexOf(prop) === -1
+                    ) {
                         target.__kompo_dirty__.push(prop);
                     }
 
-                    target[prop] = val;
+                    target[prop] = observe(val);
                     return true;
                 }
             });
-        }
-
-        const keys = Object.keys(obj);
-        for (let i = 0, l = keys.length; i < l; ++i) {
-            const key = keys[i];
-            if (reservedKeys.indexOf(key) === -1) {
-                obj[key] = observe(obj[key]);
-            }
         }
     }
 
@@ -82,7 +91,7 @@ function observeObjectFallback(obj: any): any {
             },
             set: function (val) {
                 if (isObject(val)) {
-                    observeObjectFallback(val);
+                    observe(val);
                 }
 
                 if (val != this[key] && obj.__kompo_dirty__.indexOf(key) === -1) {
@@ -98,31 +107,32 @@ function observeObjectFallback(obj: any): any {
     return obj;
 }
 
-export function inheritObserved(obj:any, aliases:?{ [key: any]: any}): any {
-    const nObj = {};
-    Object.defineProperty(nObj, '__kompo_dirty__', {
+export function inheritObserved(obj:any, ignored: Array<any> = []): any {
+    Object.defineProperty(obj, '__kompo_dirty__', {
         writable: true,
         value: []
     });
 
-    const useAliases = isObject(aliases),
-        keys = Object.keys(obj);
+    const keys = Object.keys(obj);
 
     for (let i = 0, l = keys.length; i < l; ++i) {
         const key = keys[i],
-            value = obj[key],
-            alias = useAliases ? aliases[key] || key : key;
+            value = obj[key];
 
-        const index = value.__kompo_dirty__.indexOf(key);
-        if (value.hasOwnProperty('__kompo_dirty__') && index > -1) {
-            nObj.__kompo_dirty__.push(alias);
-            value.__kompo_dirty__.splice(index, 1);
+        if(ignored.indexOf(key) > -1) continue;
+
+        if(typeof value === 'undefined') return;
+
+        if(
+            value
+            && value.hasOwnProperty('__kompo_dirty__')
+            && value.__kompo_dirty__.length > 0
+        ) {
+            obj.__kompo_dirty__.push(true);
         }
-
-        nObj[alias] = value[key];
     }
 
-    return nObj;
+    return obj;
 }
 
 export function markClean(obj: any): void {
@@ -143,4 +153,8 @@ export function markClean(obj: any): void {
             markClean(obj[keys[i]]);
         }
     }
+}
+
+export function markDirty(obj:any): void {
+    obj.__kompo_dirty__.push(true);
 }

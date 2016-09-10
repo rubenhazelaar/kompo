@@ -2,12 +2,11 @@
 import merge from '../util/merge';
 import {render} from '../component/component';
 
-export default function router(props:props):router {
+export default function construct(props:props):router {
     props = merge({
         base: '/',
         url: '/',
         notFoundCallback: function (url) {
-            console.log(67890);
             throw new Error('No matching route found for url: ' + url + '. Provide a notFoundCallback callback option or correct the url or route.');
         }
     }, props);
@@ -119,6 +118,7 @@ export default function router(props:props):router {
             setUrl(u);
 
             history.pushState(data, title, base + url);
+            return true;
         },
         get: (parent) => {
             if (parent instanceof Element) {

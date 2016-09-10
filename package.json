@@ -16,8 +16,8 @@
     "build:cjs": "./node_modules/.bin/babel ./src -d lib",
     "build:umd": "./node_modules/.bin/webpack --entry ./src/index.js --output-filename ./umd/kompo.js",
     "build:min": "./node_modules/.bin/webpack -p --entry ./src/index.js --output-filename ./umd/kompo.min.js",
-    "examples:build": "./node_modules/.bin/webpack",
-    "examples:watch": "./node_modules/.bin/webpack -w",
+    "examples:build": "./node_modules/.bin/webpack --config examples.webpack.js",
+    "examples:watch": "./node_modules/.bin/webpack --config examples.webpack.js -w",
     "lint": "./node_modules/.bin/eslint ./src/**",
     "prepublish": "npm run build",
     "start": "./node_modules/.bin/http-server /usr/src/app"
@@ -63,6 +63,7 @@
     "karma-sourcemap-loader": "0.3.7",
     "karma-webpack": "1.7.0",
     "mocha": "2.3.4",
+    "node-static": "^0.7.8",
     "sinon": "1.17.2",
     "webpack": "1.12.11"
   },
@@ -70,8 +71,5 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
-  },
-  "dependencies": {
-    "node-static": "^0.7.8"
   }
 }

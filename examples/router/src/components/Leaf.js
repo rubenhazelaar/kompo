@@ -1,6 +1,6 @@
-import component, {getRouter, react} from '../../../../src/component/component';
+import construct, {getRouter, react} from '../../../../src/component/component';
 
-export default component('div', function ({heading, paramIndex}) {
+export default construct('div', function ({heading, paramIndex}) {
     this.setAttribute('data-type', 'Leaf');
 
     // Create Elements
@@ -25,6 +25,6 @@ export default component('div', function ({heading, paramIndex}) {
 
 }
 , {
-    heading: 'Leaf component',
+    heading: 'Leaf construct',
     paramIndex: 0
 });

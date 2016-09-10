@@ -6,10 +6,10 @@ type props = { [key: any]: any };
 type attributes = { [key: any]: any };
 type options = { [key: any]: any };
 type statefull = (state:state) => void;
-type router = { goTo: (u:string, title:string, data:any) => void; get: (parent:Element) => Element;}
+type router = { goTo: (u:string, title:string, data:any) => boolean; get: (parent:KompoElement) => KompoElement;}
 type slotCallback = (Element:KompoElement) => void;
 type selector = (state:state)=>state;
-type createFn = (props:props)=>void
+type constructFn = (props:props)=>void
 
 declare class KompoElement extends Element {
     kompo: {
@@ -22,11 +22,12 @@ declare class KompoElement extends Element {
         routed: ?KompoElement;
         selector: ?selector;
         state: ?state;
+        unmount: ?Function
     };
     __kompo__: {
         root: KompoElement;
         state: state;
         router: router;
     };
-    create: createFn;
+    construct: constructFn;
 }

@@ -1,6 +1,6 @@
 # Kompo
 
-Kompo is a react js like library which tries to stay as simple as possible. No virtual DOM or JSX. 
+Kompo is a React js like library which tries to stay as simple as possible. No virtual DOM or JSX. 
 Kompo loves the DOM & makes it possible to build interfaces through components.
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/rubenhazelaar/kompo/master/LICENSE)
@@ -9,11 +9,12 @@ Kompo loves the DOM & makes it possible to build interfaces through components.
 [![Dependency Status](https://david-dm.org/rubenhazelaar/kompo.svg?style=flat-square)](https://david-dm.org/rubenhazelaar/kompo)
 [![devDependency Status](https://david-dm.org/rubenhazelaar/kompo/dev-status.svg?style=flat-square)](https://david-dm.org/rubenhazelaar/kompo#info=devDependencies)
 
-It's lightweight (3KB minified & gzipped), easy to understand & use. The only build tool you'll need is a bundler 
-like browserify or webpack.
+It's lightweight (3KB minified & gzipped), easy to understand & use. 
  
 Kompo's core concept is that of components. Together with a simple Router (inspired by Ember & React routers)
  and some helpers Kompo helps to build interfaces, which load fast and stay fast.
+ 
+IMPORTANT: This document describes v1 of the Kompo library which has a very different API from older versions
  
 ## Install
 
@@ -30,23 +31,23 @@ npm run build
 Need the UMD or minified build? Use:
 
 ```bash
-npm run build-umd
+npm run build:umd
 ```
 
 ```bash 
-npm run build-min
+npm run build:min
 ```
 
 Build the examples with the following command:
 
 ```bash
-npm run examples-build
+npm run examples:build
 
 ```
 Or use the one below if you want to experiment.
 
 ```bash
-npm run examples-watch
+npm run examples:watch
 ```
 
 ## Test
@@ -62,62 +63,52 @@ Please note: testing is still a work-in-progress and you can help out! Please ch
 The following example covers the basic functionalities of Kompo:
   
 ```javascript 
-// Component and content creation classes and functions
-import Component from 'kompo';
-import { create, createText, throttle } from 'kompo';
-import { addExtensions } from 'kompo';
-addExtensions(); // Initialize without prefix
+import construct, {react} from '../../../src/component/component';
+import dispatch from '../../../src/state/dispatch';
+import app from '../../../src/state/app';
 
-// Setup root component
-class App extends Component {
-    create() {
-        // Create elements
-        const root = create(),
-            h1 = create('h1', {
-                id: 'Primary heading' // Set attributes through an object
-            }),
-            input = create('input');
+// Create a component from a div element
+const hello = construct('div', function({name}) {
+    // Create its children
+    const h1 = document.createElement('h1'),
+        input = document.createElement('input');
 
-        // Event listener, trigger update on keyup
-        this.on(input, 'keyup', throttle(this,(e, state) => {
-            if(state.name != e.target.value) {
-                state.name = e.target.value;
-                return true; // If value has changed return true
-            }
-            return false; // This could be omitted
-        }));
-
-        // Statefull element, changes when an update is triggered by the event listener above
-        this.react((state) => {
-            const name = typeof state.name !== 'undefined' && state.name !== ''? state.name: this.props.name;
-            h1.replace(createText('Hello world, this is ' + name));
+    // Add some even listeners in which
+    // the dispatch function dispatches
+    // changes to the state
+    input.addEventListener('keyup', () => {
+        dispatch(this, state => {
+            state.name = input.value;
         });
+    });
 
-        // Append children to root
-        root
-            .append(h1, {
-               'data-heading': 'Primary heading' // Add more attributes on append
-            }, false)
-            .append('p').txt('Type your name to say "Hello world": ')
-                .append(input);
+    // React to a state change (triggered by dispatch())
+    react(this, state => {
+        h1.textContent = 'Hello world, this is ' + (state.name? state.name: name);
+    });
 
-        // Return the root
-        return root;
-    }
-}
-
-// Set a name as default property
-App.defaultProps = {
+    // Last, but not least. Attach the children
+    this.appendChild(h1);
+    this.appendChild(input);
+},{
+    // Some default properties
     name: 'Kompo'
+});
+
+// Setup state
+const state = {
+    name: ''
 };
 
-// Append component to body; notice the empty state
-// and how it is used together with a default property
-// in the react callback above
-document.body.append(new App().setState({}));
+// Create instance of the component
+// and initialize application with state
+const a = app(hello(), state);
+
+// Kick-off app and append to body
+document.body.appendChild(a.start());
 ```
 
-The example above is taken from the extendedHelloWorld example in the `./examples` folder.  
+The example above is taken from the extendedHelloWorld example in the `./examples` folder.
 For more details look at the section 'Concepts' below or at the examples.
 
 ## Concepts
@@ -131,7 +122,7 @@ made accessible and usable in a way that helps users create, render en re-render
 * Small footprint
 * As 'vanilla' as possible, with some optional enhancements
 * The developer knows best
-* Future facing (supports all modern browsers and IE9+)
+* Future facing (supports all modern browsers and IE10+)
 
 In order to make it possible to work with components in a efficient manner in the DOM, 
 Kompo uses some concepts to help the user. These should not sound too unfamiliar:
@@ -148,38 +139,29 @@ A component in Kompo forms the main building block in Kompo. A component contain
  
 * All interfaces start with a root component (comparable with React), and from this root, all children 
  components are rendered and re-rendered.  
-* Each component must return a single Node or Element that links it with the DOM through the `Component.create()` function. 
-Its possible to do all your work in the `create()` function. However perhaps sometimes it's easier to split things up. 
-It's all up to you as developer, as long as a components `create()` function returns the root Node or Element.   
-* A component can be statefull or not. (State can be set through `Component.mount()` or `Component.setState()`).
+* A component can be statefull or not. Good indications of when a component uses state are the usage of functions such as `mount()`, `getState()` or `react`).
 * A component can have properties, however properties should not be confused with the state of a component. 
-(Properties are usually set through the constructor, however you are free to apply them any way you see fit)
 
 Defining and using a component is easy:
 
 ```javascript
 // Component class
-import Component from 'kompo';
-import ChildComponent from 'your/code/ChildComponent.js';
+import component from 'kompo';
+import childComponent from 'your/code/childComponent.js';
 
-class MyComponent extends Component {
-    create() {
-        // Create a root Element (or Node)
-        const root = document.createElement('div');
-        
-        // Mount your child component to register it in the update tree
-        // Stateless components do not need to be mounted.
-        const child = this.mount(new ChildComponent);
-        
-        // Do your magic
-        
-        // Append the child component
-        root.append(child);
-        
-        // Finally return a root Element (or Node)
-        return root;
-    }
-}
+// Create a component based on a div element
+export default component.construct('div', function({name}) {
+    const child = childComponent(/* Some properties here */);
+    
+    // Do your magic (events, etc.)
+    
+    // Append the child component through mount.
+    // The selector function passes the child
+    // the state it needs.
+    component.mount(this, child, state => {
+        return state.some.part;
+    });
+});
 ```
 
 Going on ...
@@ -190,12 +172,12 @@ Properties of components are those that you as creator define and remain unchang
 
 State is that which is influenced by user actions (such as clicks) or calls going to or coming in from a server. State in a Kompo
  application can be defined by an object literal (POJO). This object can be as simple or complex as it needs to be.
- Each component has a special function to help to react to elements which are statefull and it looks like this:
+ A special function to help you to react to changes in your state is called `react()` and it looks like this:
   
 ```javascript
-// In a create function of some component ...
+// In a construct function of some component ...
 
-this.react((state, Component) => { // Component === this
+react(this, (state, component) => { // component === this
     // Work with state here
     
     // TIP: 
@@ -211,306 +193,39 @@ this.react((state, Component) => { // Component === this
 // ... some more stateless work
 ```
 
+All state is made observable by Kompo and `react()` callbacks are only called when something in the state of the component
+has changed.
+
 Of course it is not only necessary to react to changes in the state. It is also necessary to make those changes.
 A prime example is of course that of handling events:
 
 ```javascript
-// In a create function of some component ...
+// In a construct function of some component ...
 
 const button = document.createElement('a');
 
-this.on(button, 'click', function(e, state){
+button.addEventListener('click', e => {
     // Perform some action
-    
-    // If the state has changed
-    return true;
-    
-    // If the state has NOT changed
-    return false; // or do not explicitly return at all
+    // and if it is necessary to change the state
+    // Do so with the dispatch function:
+    dispatch(this, state => {
+         // some change in the state
+    });
 });
 ```
 
-For more complex situations events can also be delegated:
+For more complex situations events can also be delegated. Use the delegate function in the komp-util repo for this. 
 
-```javascript
-this.on(button, 'selector' ,'click', function(e, target, state, ChildComponent){ // Etc.  
-```
+### API Reference
 
-Notice in this example that we have two extra parameters to the callback, namely the target which matches the selector and
- the child component to which the target belongs to. With the child component available it is 
- possible to directly deal with the component and NOT individual elements. This should preferably be handled inside the 
- (child) component in order to enhance containment.
+WIP
 
-More advanced handling of actions & reactions with some helpers are available, more on that now ...
+## Todo
 
-### Action & Reaction
-
-Every application should be able to trigger an action and react accordingly. To achieve efficient re-rendering of an
- application Kompo provides some helpers. These helpers are called `action`, `AsyncAction`, `Do` and `reaction`. Let's
- start with the last one:
- 
-```javascript
-import { reaction } from 'kompo'
-
-// In a create function of some component ...
-
-this.react(reaction((state, previous, Component) => {
-    // Work with state here
-    if(state.some.variable !== previous) {
-        // Do the heavy lifting here
-    }
-    
-    // Finally return the part of the the state you 
-    // use to compare the parameter previous with.
-    return state.some.variable; 
-}));
-
-// ... some more stateless work
-```
-
-As you can see in the example above the callback for the `Component.react()` function is wrapped in the helper. 
-This helper exposes the `previous` parameter. With this parameter you can compare with a part of the state.
- 
-This works great with some data, however when comparing objects you have to beware that an object of
-the same reference can have different data internally. Simply comparing wont cut it. To make it easier to compare
-objects you can use the `action` and `Do` helpers. This looks something like this:
-
-```javascript
-import action from 'kompo'
-
-// In a create function of some component ...
-
-const button = document.createElement('a');
-
-this.on(button, 'click', action((e, state) => {
-    // Perform some action
-    
-    // If the state has changed
-    return new Do(true, state.some.object);
-    
-    // If the state has NOT changed
-    return new Do(false, state.some.object);
-}));
-``` 
-
-Just like the `reaction` helper we wrap the event callback in the `action` helper and in this case also return the `Do`
-helper. This flags if the object has changed or not. The `reaction` helper will then use this flag to determine if the object
-is the same as the previous object. So simply comparing the object in the state against the `previous` parameter will suffice.
-
-In some cases it is necessary to trigger an action in a reaction/statefull callback. Normally this would cause an infinite loop, however by using
-the following helpers will enable you to ignore that reaction/statefull callback in the update loop. Some examples:
-
-```javascript
-
-// In a create function of some component ...
-
- this.react(function willBeIgnoredInNextUpdate(state, Component) {
-    Component.ignore(willBeIgnoredInNextUpdate);
-    // ... trigger an action here
- });
-```
-
-```javascript
-
-// In a create function of some component ...
-
- this.react(function willBeIgnoredInNextUpdate(state, Component) {
-        Component.on(el, 'click', action((e, state) => {
-            // Handling the action ...
-        }, willBeIgnoredInNextUpdate);
-        
-        
- });
-```
-
-```javascript
-    
-// In a create function of some component ...
-
-this.react(function willBeIgnoredInNextUpdate(state, Component) { 
-
-    // ... Perhaps with an AsyncAction as callback of Promise for example
-    promise.then(action.d(callback, willBeIgnoredInNextUpdate));
-
-// ... more code
-```
-
-As you can see, helpers will help you as developer. However you are free to do as you please, which bring us to the 
-following section:
-
-### Imperative vs Declarative
-
-Because Kompo strives to stick as close to the DOM as possible it does not implement something like JSX. And because
-Nodes & Elements are created through the DOM API (or helpers extended on the DOM API) it is NOT declarative as 
-HTML (templates) or JSX would be. Although the extension for the DOM API tries to make declaring and appending elements as
- simple as possible, it is strictly described only as imperative code. More examples
- are found in the `./examples` folder of this repository. The following example is created with help of the DOM API extensions,
-  however you can also just use normal DOM API functions such as `appendChild`. 
- 
-```javascript
-import { create } from 'kompo';
-
-// In a create function of some component ...
-
-// Create elements
-const root = create(),
-    h1 = create('h1', {
-        id: 'Primary heading' // Set attributes through an object
-    }).txt('Hello World'),
-    input = create('input');
-
-// Structure elements
-root
-    .append(h1, false)
-    .append('p').txt('Type your name to say "Hello world": ')
-        .append(input);
-        
-// Finally return root Element
-return root;
-```
-
-To register a Component in the component tree it should be mounted in its parent Component using the `Component.mount()`
-function. With this function the state is passed to the child Component.
-
-```javascript
-import TodoList from './examples/todo/src/component/TodoList'
-
-// In a create function of some component ...
-
-const list = this.mount(new TodoList({
-    className: 'TodoList'
-}));
-
-// Structure elements
-root.append(list);
-
-// Finally return root Element
-return root;
-```
-
-To compose Components in a more flexible way the `Component.nest()` function can be used. This function serves two purposes. 
-The first is to provide inside access to the Component on which the `nest()` function is called through a callback. The 
-second is to call the given callback inside the component (for example in the `Component.create()` function)
-at the desired location. This enables the developer to determine (a part of) the implementation of a given component. 
-Consider the following example:
-
-```javascript
-import { create } from 'kompo';
-import MyNestableComponent from 'your/code/MyNestableComponent.js';
-
-// In a create function of some component ...
-const myNestableComponent = new MyNestableComponent;
-
-myNestableComponent.nest((state, MyNestableComponent) => {
-    // A nest callback should always return a root Node or Element, just like a Component.
-    // What happens to this Node or Element is determined by the Component. 
-    // In this case MyNestableComponent (see below).
-    return create('div').txt('This Element will be used in MyNestableComponent');
-});
-```
-
-```javascript
-// Inside the create function of MyNestableComponent
-
-const root = create('div').txt('This element will hold the nested Element given by the nest callback'),
-    nestedElement = this.nest(); // Called without callback
-
-root.append(nestedElement) 
-
-return root;
-```
-
-These examples are taken from the examples in the `./examples` folder.
-
-#### Code structure
-
-When working with javascript it's easy to end of with big ball of spaghetti code. Kompo helps structuring your code with
- the help of components, however when a components becomes more complex it is necessary to keep code organized and maintainable.
- Kompo provides some conventions & helpers which can help you with this:
- 
-```javascript
-import Component, { create, createText } from 'kompo';
-
-// In a create function of some component ...
-
-// First declare elements used in 
-// event listeners (Component.on()) and  
-// Component.react() callbacks e.g.:
-const h1 = create('h1'), 
-    input = create('input');
-
-// Then define actions on those elements
-this.on(input, 'keyup', (e, state) => {
-     if(state.name != e.target.value) {
-         state.name = e.target.value;
-         return true; // If value has changed return true
-     }
-     return false; // This could be omitted
-});
-
-// Reactions follow an action
-this.react((state) => {
-    const name = typeof state.name !== 'undefined' && state.name !== ''? state.name: this.props.name;
-    h1.replace(createText('Hello world, this is ' + name));
-});
-
-// If all actions and reactions are coded,
-// structure your elements and return the root element
-root
-    .append(h1, false)
-    .append('p').txt('Type your name to say "Hello world": ')
-        .append(input);
-
-return root;
-```
-
-These are the basic conventions of stucturing code when using Kompo. You may of course also factor out specific functions
-outside the `Component.create()` function, however keep element sharing (through the `this` keyword) between functions (and the `create()` function) 
-to a minimum.
- 
-To further help you with structuring your code, the Component class provides two helper methods. One for actions (events) and the
-other for reactions. These helpers allow you to bundle all actions and reactions, factoring them out of the `create()` function.
-In doing so your component's `create()` function is only responsible for creating and structuring the elements of the component.
-
-The `Component.actions()` function:
-
-```javascript
-import Component, { create, createText } from 'kompo';
-
-MyComponent extends Component {
-    // After your Component.create() function
-    actions() {
-        return [
-            [this.button, 'click', (e) => { ... callback ... }],
-            // etc.
-        ];
-    }
-}
-```
-
-__IMPORTANT:__ Make sure elements are accessible, for example by using `this.<ElementName>` in your `Component.create()` function.
- Using this convention also signals you & others that these elements are used outside the `Component.create()` function.
-
-
-The `Component.reactions()` function is even easier:
-
-```javascript
-import Component, { create, createText } from 'kompo';
-
-MyComponent extends Component {
-    // After your Component.create() function
-    // and Component.actions() function
-    reactions() {
-        return [
-             (state) => { ... callback ... },
-             // etc.
-        ];
-    }
-}
-```
-
-What's great about these methods is that they can overridden by extending Components and can be used together
-with the new `super` keyword in order to modify behavior for these extending Components.
+- API Reference
+- AJAX example (using Fetch API)
+- Make router appropriate for other routing mechanism instead of only swap()
+    - return selected component AND children
 
 ## Contribute
 

@@ -1,8 +1,8 @@
 // @flow
 import observe from './observe';
-import {render} from '../component/component'
+import {render, setState} from '../component/component'
 
-export default function app(root:KompoElement, state:any, router:?router):{start:() => void} {
+export default function app(root:KompoElement, state:any, router:?router):{start:() => KompoElement} {
     state = observe(state);
 
     // Make available for all Elements
@@ -15,7 +15,10 @@ export default function app(root:KompoElement, state:any, router:?router):{start
     });
 
     return {
-        start: function ():KompoElement {
+        start: function (selector:?selector):KompoElement {
+            if(selector) {
+                setState(root, selector);
+            }
             render(root);
             return root
         }

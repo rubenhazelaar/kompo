@@ -80,3 +80,5 @@ node_modules
 lib
 umd
 examples/**/*-bundle.js*
+
+TODO.md

@@ -1,7 +1,7 @@
-import component, {react, getRouter} from '../../../../src/component/component';
+import construct, {react, getRouter} from '../../../../src/component/component';
 import {swap} from '../../../../src/router/router';
 
-export default component('div', function ({heading}) {
+export default construct('div', function ({heading}) {
     this.setAttribute('data-type', 'Branch');
     
     // Create Elements
@@ -16,5 +16,5 @@ export default component('div', function ({heading}) {
         swap(this, r);
     });
 }, {
-    heading: 'Branch component'
+    heading: 'Branch construct'
 });

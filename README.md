@@ -222,6 +222,9 @@ WIP
 
 ## Todo
 
+- Can Kompo component by extended by a class for custom elements?
+- Change order of appendChild and render() in mount and append functions?
+- Inline documentation
 - API Reference
 - AJAX example (using Fetch API)
 - Make router appropriate for other routing mechanism instead of only swap()

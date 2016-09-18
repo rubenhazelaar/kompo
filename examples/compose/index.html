@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Compose example - Kompo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
+    <style>
+        body {
+            padding:2em;
+        }
+
+        table {
+            width: 100%;
+            margin-bottom: 1em
+        }
+
+        td, th {
+            padding: 0.5em 0.75em;
+            border: 1px solid #000;
+        }
+
+        th {
+            text-align: left;
+            background-color: gray;
+        }
+
+        td {
+            background-color: lightgray;
+        }
+
+        .clickableRow {
+            cursor: pointer;
+        }
+
+        .clickableRow:hover  > td{
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+<script src="dist/compose-bundle.js"></script>
+</body>
+</html>

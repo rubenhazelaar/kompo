@@ -11,6 +11,10 @@ import construct, {
     ,unmountAll
     ,mountIndex
     ,getState
+    ,compose
+    ,append
+    ,getProps
+    ,constructClass
 } from './component/component';
 import constructRouter, {
     route
@@ -64,6 +68,10 @@ export default {
     ,unmountAll
     ,mountIndex
     ,getState
+    ,compose
+    ,append
+    ,getProps
+    ,constructClass
 };
 
 export {

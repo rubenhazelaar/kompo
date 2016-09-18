@@ -33,9 +33,7 @@ var config = {
             }
         ]
     },
-    plugins: [
-        new DedupePlugin()
-    ]
+    plugins: []
 };
 
 module.exports = config;

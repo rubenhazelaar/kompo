@@ -4,6 +4,9 @@ import hasProxy from '../util/hasProxy';
 import isObject from '../util/isObject';
 import {markClean} from '../state/observe';
 
+/**
+ * Adds construct function to Element prototype
+ */
 Object.defineProperty(Element.prototype, 'construct', {
     writable: true,
     value: function () {
@@ -11,7 +14,15 @@ Object.defineProperty(Element.prototype, 'construct', {
     }
 });
 
-export default function construct(tag:string, constructFn:constructFn, defaultProps:props = {}):(props:props)=> KompoElement {
+/**
+ * Creates a compnent from an Element
+ *
+ * @param tag
+ * @param constructFn
+ * @param defaultProps
+ * @returns {function()}
+ */
+export default function construct(tag:string, constructFn:constructFn, defaultProps:props = {}):constructComponent {
     return (props = {}) => {
         const c = kompo(document.createElement(tag));
         c.kompo.props = merge(Object.assign({}, defaultProps), props);
@@ -20,6 +31,21 @@ export default function construct(tag:string, constructFn:constructFn, defaultPr
     };
 }
 
+export function constructClass(tag:string, constructClass: any, defaultProps:props = {}):constructComponent {
+    const methods = getMethods(constructClass.prototype);
+    return (props = {}) => {
+        const c = kompo(document.createElement(tag));
+        c.kompo.props = merge(Object.assign({}, defaultProps), props);
+        merge(c,methods);
+        return c;
+    };
+}
+
+/**
+ * Renders given component
+ *
+ * @param Element
+ */
 export function render(Element:KompoElement):void {
     const kompo = Element.kompo;
     if (kompo.initial) {
@@ -102,7 +128,13 @@ export function getState(Element:KompoElement):any {
 
 export function mount(parent:KompoElement, child:KompoElement|Array<KompoElement>, selector:?selector|KompoElement|Array<KompoElement>, sel:?selector):void {
     let el;
-    if (arguments.length === 4) {
+    if (
+        arguments.length >= 3
+        && (
+            Array.isArray(selector)
+            || selector instanceof Element
+        )
+    ) {
         el = child;
         child = selector;
         selector: selector = sel;
@@ -141,7 +173,7 @@ function _mountAll(parent:KompoElement, Element:Element, children:Array<KompoEle
 
     // Mount all children ...
     for(let i = 0, l = children.length; i < l; ++i) {
-        _mount(parent, frag, children[i], selector(i));
+        _mount(parent, frag, children[i], selector? selector(i): undefined);
     }
 
     // ... append to DOM in one go
@@ -176,6 +208,17 @@ export function react(Element:KompoElement, statefull:statefull):void {
     );
 }
 
+/**
+ * Mimics the slot functionality of 
+ * Web Components
+ * 
+ * Slots are named, their name & location is 
+ * predefined in the component.
+ * 
+ * @param Element
+ * @param name
+ * @param cb
+ */
 export function slot(Element:KompoElement, name:string, cb:?slotCallback):void {
     if (arguments.length === 2) {
         Element.kompo.slots[name](Element);
@@ -184,10 +227,80 @@ export function slot(Element:KompoElement, name:string, cb:?slotCallback):void {
     }
 }
 
+/**
+ * Checks whether a slot with the given name exists
+ * 
+ * @param Element
+ * @param name
+ * @returns {boolean}
+ */
 export function hasSlot(Element:KompoElement, name:string):boolean {
     return Element.kompo.slots[name]? true: false;
 }
 
+/**
+ * Gets the router from an Element. The router is 
+ * add globally to the Element prototype
+ * 
+ * @param Element
+ * @returns {router}
+ */
 export function getRouter(Element:KompoElement):router {
     return Element.__kompo__.router;
+}
+
+/**
+ * Adds properties to an existing component,
+ * making it possible to compose a component with
+ * different behavior.
+ * 
+ * @param constructComponent
+ * @param composeProps
+ * @returns {function()}
+ */
+export function compose(constructComponent: constructComponent, composeProps:props): constructComponent {
+    return (props = {}) => {
+        return constructComponent(merge(composeProps, props));
+    };
+}
+
+export function append(parent:KompoElement, child:KompoElement):void {
+    parent.appendChild(child);
+    render(child);
+}
+
+export function getProps(Element:KompoElement): props {
+    return Element.kompo.props;
+}
+
+export function getMethods(clss) {
+    const props = [],
+        methods = {};
+
+    let obj = clss;
+
+    do {
+        const ps = Object.getOwnPropertyNames(obj);
+
+        const fps = [];
+        for(let i = 0, l = ps.length; i < l; ++i) {
+            const p = ps[i];
+            if(
+                typeof obj[p] === 'function'    //only the methods
+                && p != 'constructor'           //not the constructor
+                && (i == 0 || p !== ps[i - 1])  //not overriding in this prototype
+                && props.indexOf(p) === -1      //not overridden in a child
+            ) {
+                fps.push(p);
+                methods[p] = clss[p];
+            }
+        }
+
+        props.push.apply(props, fps);
+    } while (
+        (obj = Object.getPrototypeOf(obj)) &&   //walk-up the prototype chain
+        Object.getPrototypeOf(obj)              //not the the Object prototype methods (hasOwnProperty, etc...)
+    );
+
+    return methods;
 }

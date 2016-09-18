@@ -16,7 +16,9 @@ var config = {
         'examples/helloWorld/dist/helloWorld-bundle': './examples/helloWorld/src/helloWorld.js',
         'examples/extendedHelloWorld/dist/extendedHelloWorld-bundle': './examples/extendedHelloWorld/src/extendedHelloWorld.js',
         'examples/router/dist/router-bundle': './examples/router/src/router.js',
-        'examples/todo/dist/todo-bundle': './examples/todo/src/todo.js'
+        'examples/todo/dist/todo-bundle': './examples/todo/src/todo.js',
+        'examples/compose/dist/compose-bundle': './examples/compose/src/compose.js',
+        'examples/classbased/dist/classbased-bundle': './examples/classbased/src/classbased.js'
     },
     output: {
         path: './',
@@ -37,9 +39,7 @@ var config = {
             }
         ]
     },
-    plugins: [
-        new DedupePlugin()
-    ]
+    plugins: []
 };
 
 module.exports = config;

@@ -3,6 +3,8 @@ import construct from '../../../../src/component/component';
 export default construct('div', function({defaultClass, addCallback}) {
     const input = document.createElement('input'),
         add = document.createElement('a');
+
+    input.setAttribute('autofocus', true);
     add.setAttribute('href', 'javascript:void(0);');
     add.textContent = 'Add';
     

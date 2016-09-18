@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Classbased compose example - Kompo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
+    <style>
+        body {
+            padding:2em;
+        }
+
+        table {
+            width: 100%;
+            margin-bottom: 1em
+        }
+
+        td, th {
+            padding: 0.5em 0.75em;
+            border: 1px solid #000;
+        }
+
+        th {
+            text-align: left;
+            background-color: gray;
+        }
+
+        td {
+            background-color: lightgray;
+        }
+
+        .clickableRow {
+            cursor: pointer;
+        }
+
+        .clickableRow:hover  > td{
+            background-color: yellow;
+        }
+    </style>
+
+</head>
+<body>
+<script src="dist/classbased-bundle.js"></script>
+<!--<script>-->
+    <!--function getMethods(clss) {-->
+        <!--const props = [],-->
+                <!--methods = {};-->
+
+        <!--let obj = clss;-->
+
+        <!--do {-->
+            <!--const ps = Object.getOwnPropertyNames(obj);-->
+
+            <!--const fps = [];-->
+            <!--for(let i = 0, l = ps.length; i < l; ++i) {-->
+                <!--const p = ps[i];-->
+                <!--if(-->
+                    <!--typeof obj[p] === 'function'    //only the methods-->
+                    <!--&& p != 'constructor'           //not the constructor-->
+                    <!--&& (i == 0 || p !== ps[i - 1])  //not overriding in this prototype-->
+                    <!--&& props.indexOf(p) === -1      //not overridden in a child-->
+                <!--) {-->
+                    <!--fps.push(p);-->
+                    <!--methods[p] = clss[p];-->
+                <!--}-->
+            <!--}-->
+
+            <!--props.push.apply(props, fps);-->
+        <!--} while (-->
+            <!--(obj = Object.getPrototypeOf(obj)) &&   //walk-up the prototype chain-->
+            <!--Object.getPrototypeOf(obj)              //not the the Object prototype methods (hasOwnProperty, etc...)-->
+        <!--);-->
+
+        <!--return methods;-->
+    <!--}-->
+
+    <!--function merge() {-->
+        <!--var object = Array.prototype.shift.call(arguments);-->
+        <!--for (let i = 0; i < arguments.length; i++) {-->
+            <!--let obj = arguments[i];-->
+            <!--for (let j in obj) {-->
+                <!--object[j] = obj[j];-->
+<!--//                    console.log(j);-->
+<!--//                    Object.defineProperty(object, j, {-->
+<!--//                        value: obj[j]-->
+<!--//                    });-->
+            <!--}-->
+        <!--}-->
+
+        <!--return object;-->
+    <!--}-->
+
+    <!--class ParentTable {-->
+        <!--generateRows() {-->
+            <!--console.log(this);-->
+        <!--}-->
+    <!--}-->
+
+    <!--class Table extends ParentTable {-->
+        <!--appendRow() {-->
+            <!--console.log(this);-->
+            <!--this.createRow();-->
+        <!--}-->
+
+        <!--createRow() {-->
+            <!--const tr = this.appendChild(document.createElement('tr')),-->
+                <!--td = tr.appendChild(document.createElement('td'));-->
+            <!--td.textContent = 123;-->
+            <!--console.log(456);-->
+        <!--}-->
+    <!--}-->
+
+    <!--const tEl = document.createElement('table'),-->
+            <!--tC = new Table;-->
+
+
+    <!--console.log(tC, tEl);-->
+    <!--console.log(getMethods(tC));-->
+
+    <!--merge(tEl, getMethods(Table.prototype));-->
+
+    <!--console.log(tEl);-->
+
+    <!--tEl.appendRow();-->
+    <!--tEl.generateRows();-->
+
+    <!--document.body.appendChild(tEl);-->
+<!--</script>-->
+</body>
+</html>

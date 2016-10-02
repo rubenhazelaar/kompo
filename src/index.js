@@ -15,6 +15,8 @@ import construct, {
     ,append
     ,getProps
     ,constructClass
+    ,children
+    ,appendChildren
 } from './component/component';
 import constructRouter, {
     route
@@ -72,6 +74,8 @@ export default {
     ,append
     ,getProps
     ,constructClass
+    ,children
+    ,appendChildren
 };
 
 export {

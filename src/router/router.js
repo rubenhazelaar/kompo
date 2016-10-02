@@ -120,12 +120,16 @@ export default function construct(props:props):router {
             history.pushState(data, title, base + url);
             return true;
         },
-        get: (parent) => {
+        get: (parent, depth) => {
             if (parent instanceof Element) {
                 index = parent.kompo.level + 1;
             }
 
-            return match(url, routes)[index];
+            if(depth) {
+                return match(url, routes).slice(index, index + depth);
+            } else {
+                return match(url, routes)[index];
+            }
         }
     }
 }

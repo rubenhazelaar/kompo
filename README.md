@@ -222,7 +222,7 @@ WIP
 
 ## Todo
 
-- Can Kompo component by extended by a class for custom elements?
+- Can Kompo component by extended by aclass for custom elements?
 - Change order of appendChild and render() in mount and append functions?
 - Inline documentation
 - API Reference

@@ -107,7 +107,8 @@ export function kompo(Element:Element):KompoElement {
         routed: undefined,
         selector: undefined,
         state: undefined,
-        unmount: undefined
+        unmount: undefined,
+        children: undefined
     };
 
     return Element;
@@ -265,8 +266,8 @@ export function compose(constructComponent: constructComponent, composeProps:pro
 }
 
 export function append(parent:KompoElement, child:KompoElement):void {
-    parent.appendChild(child);
     render(child);
+    parent.appendChild(child);
 }
 
 export function getProps(Element:KompoElement): props {
@@ -304,3 +305,25 @@ export function getMethods(clss) {
 
     return methods;
 }
+
+export function children(Element:KompoElement, children: Array<any>):KompoElement {
+    Element.kompo.children = children;
+    return Element;
+}
+
+export function appendChildren(Element:KompoElement, useFragment:bool) {
+    const children = Element.kompo.children,
+        parent = useFragment? document.createDocumentFragment(): Element;
+
+    for(let i = 0, l = children.length; i < l; ++i) {
+        const child = children[i];
+        if(child.hasOwnProperty('kompo')) {
+            render(child);
+        }
+        parent.appendChild(child);
+    }
+
+    if(useFragment) {
+        Element.appendChild(parent);
+    }
+} 

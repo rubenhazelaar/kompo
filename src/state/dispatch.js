@@ -1,7 +1,7 @@
 // @flow
 import {render} from '../component/component';
 
-export default function dispatch(Element:KompoElement, cb:(state:state)=>void):void {
+export default function dispatch(Element:KompoElement, cb:(state:state)=>void, noRender:boolean):void {
     if (!cb) return;
 
     const kompo = Element.kompo,
@@ -10,5 +10,5 @@ export default function dispatch(Element:KompoElement, cb:(state:state)=>void):v
     if (!state) return;
 
     cb(state);
-    render(Element.__kompo__.root);
+    if (!noRender) render(Element.__kompo__.root);
 }

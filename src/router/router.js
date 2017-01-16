@@ -57,10 +57,17 @@ export default function construct(props:props):router {
     }
 
     function buildPath(route, ancestors = [], level = 0) {
-        const children = route.children,
-            routeComponent = route.component;
+        const children = route.children;
+        const routeComponent = route.component;
 
-        routeComponent.kompo.level = level;
+        if(routeComponent instanceof Element) {
+            routeComponent.kompo.level = level;
+        } else {
+
+
+        }
+        //     route.component = routeComponent();
+        // }
 
         if (!children) return;
 
@@ -68,8 +75,14 @@ export default function construct(props:props):router {
             isRoot = ancestors.length === 0;
 
         for (let i = 0, l = children.length; i < l; i++) {
-            const childRoute = children[i],
-                componentPath = !isRoot ?
+            const childRoute = children[i];
+
+            if(childRoute.component instanceof Element) {
+            } else {
+                childRoute.component = childRoute.component();
+            }
+
+            const componentPath = !isRoot ?
                     ancestors.concat(childRoute.component) :
                     ancestors.concat(routeComponent, childRoute.component);
             let path;
@@ -98,6 +111,7 @@ export default function construct(props:props):router {
             if (match !== null) {
                 match.shift();
                 params = match;
+                console.log(against[regexstr]);
                 return against[regexstr];
             }
         }
@@ -124,6 +138,7 @@ export default function construct(props:props):router {
             if (parent instanceof Element) {
                 index = parent.kompo.level + 1;
             }
+            console.log(index);
 
             if(depth) {
                 return match(url, routes).slice(index, index + depth);
@@ -147,6 +162,33 @@ export function indexRoute(component: KompoElement):?{path:string; component:Kom
 export function swap(component: KompoElement, router:router, element:Element):void {
     const c = router.get(component),
         el = element ? element : component;
+
+    console.log(c);
+    if(c instanceof Element) {
+    } else {
+        c.then((mod) => {
+            const c = mod.default();
+
+            const routed = component.kompo.routed;
+            if (routed) {
+                el.replaceChild(c, routed);
+                component.kompo.mounts.splice(component.kompo.mounts.indexOf(routed, 1));
+            } else {
+                el.appendChild(c);
+            }
+
+            render(c);
+
+            if (component.kompo.mounts.indexOf(c) == -1) {
+                component.kompo.mounts.push(c);
+            }
+
+            component.kompo.routed = c;
+        });
+
+        return
+    }
+
     if (c) {
         const routed = component.kompo.routed;
         if (routed) {

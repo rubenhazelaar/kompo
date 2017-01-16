@@ -151,13 +151,13 @@ export function mount(parent:KompoElement, child:KompoElement|Array<KompoElement
 }
 
 function _mount(parent:KompoElement, Element:KompoElement, child:KompoElement, selector:?selector):void {
-    Element.appendChild(child);
-
     if (selector) {
         setState(child, selector);
     }
 
     render(child);
+
+    Element.appendChild(child);
 
     // Protection if same element is appended multiple times
     const mounts = parent.kompo.mounts;

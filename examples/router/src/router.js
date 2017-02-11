@@ -9,7 +9,7 @@ import router, {route, indexRoute, swap} from '../../../src/router/router';
 
 // Example components with self-explanatory name
 import leaf from './components/leaf';
-// const waitForBranch = require('bundle!./components/branch');
+import branch from './components/branch';
 
 // Create root construct for navigation
 const root = construct('div', function () {
@@ -49,6 +49,7 @@ const root = construct('div', function () {
     // On update swap the new 
     // routed construct
     react(this, () => {
+        console.log("LEVEL ONE SWAP");
         swap(this, r);
     });
 });
@@ -65,9 +66,11 @@ const routes = route('/', root(), [
     , route('param/:param', leaf({
         heading: 'Route with a param, shown in Component'
     }))
-    , route('branch', () => {
-        return System.import('./components/branch');
-    }, [
+    , route('branch', branch()
+    // ()  => {
+    //     return System.import('./components/branch');
+    // }
+    ,[
         indexRoute(leaf({
             heading: 'Nested index construct',
             input: true

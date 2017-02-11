@@ -1,10 +1,10 @@
 webpackJsonpkompo([0],{
 
 /***/ 19:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-'use strict';
+
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -40,7 +40,7 @@ exports.default = (0, _component2.default)('div', function (_ref) {
     heading: 'Branch construct'
 });
 
-/***/ }
+/***/ })
 
 });
 //# sourceMappingURL=0.js.map

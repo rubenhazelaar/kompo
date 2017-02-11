@@ -10,7 +10,6 @@ var webpack = require("webpack"),
 
 var config = {
     cache: true,
-    debug: true,
     devtool: 'sourcemap',
     entry: {
         'examples/helloWorld/dist/helloWorld-bundle': './examples/helloWorld/src/helloWorld.js',
@@ -27,11 +26,14 @@ var config = {
         libraryTarget: 'umd'
     },
     resolve: {
-        extensions: ['', '.js', '.json'],
-        modulesDirectories: ["node_modules"]
+        extensions: ['.js', '.json'],
+        modules: [
+            "node_modules",
+            path.resolve(__dirname, "src")
+        ]
     },
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.js$/,
                 exclude: /(node_modules)/,

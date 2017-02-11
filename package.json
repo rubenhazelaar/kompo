@@ -1,6 +1,6 @@
 {
   "name": "kompo",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Kompo is a react like library which tries to stay simple as possible. No virtual DOM or JSX. Kompo loves the DOM.",
   "main": "./lib/index.js",
   "repository": {
@@ -65,7 +65,7 @@
     "mocha": "3.0.2",
     "node-static": "^0.7.8",
     "sinon": "1.17.5",
-    "webpack": "^2.1.0-beta.22"
+    "webpack": "^2.2.1"
   },
   "config": {
     "commitizen": {

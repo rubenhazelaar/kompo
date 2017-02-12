@@ -4,7 +4,7 @@ import dispatch from '../../../src/state/dispatch';
 import app from '../../../src/state/app';
 
 // Router classes and components
-import router, {route, indexRoute, swap, loadComponent} from '../../../src/router/router';
+import router, {route, indexRoute, swap} from '../../../src/router/router';
 // import link from '../../../src/router/link';
 
 // Example components with self-explanatory name

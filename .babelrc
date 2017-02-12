@@ -1,10 +1,15 @@
 {
-    "presets": ["es2015", "stage-0"],
+    "presets": [
+        ["env", {
+            "targets": {
+                "browser": "> 1%"
+            }
+        }]
+    ],
     "plugins": [
         "syntax-flow",
         "transform-class-properties",
         "transform-flow-strip-types",
-        "transform-object-assign",
-        ['transform-es2015-classes', {loose: true}]
+        "transform-object-assign"
     ]
 }

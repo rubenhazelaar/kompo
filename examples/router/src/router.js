@@ -9,7 +9,7 @@ import router, {route, indexRoute, swap} from '../../../src/router/router';
 
 // Example components with self-explanatory name
 import leaf from './components/leaf';
-// import branch from './components/branch';
+import branch from './components/branch';
 
 // Create root construct for navigation
 const root = construct('div', function () {

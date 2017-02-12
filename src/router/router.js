@@ -63,7 +63,7 @@ export default function construct(props:props):router {
         if(routeComponent instanceof Element) {
             routeComponent.kompo.level = level;
         } else if (routeComponent instanceof Promise) {
-            // Try to set a level to the promise
+            // Set a level to the promise
             routeComponent.kompo = { level };
         }
 
@@ -150,48 +150,39 @@ export function indexRoute(component: KompoElement):?{path:string; component:Kom
 }
 
 export function swap(component: KompoElement, router:router, element:Element):void {
-    let c = router.get(component),
-        el = element ? element : component;
+    const c = router.get(component);
 
     if(c) {
         if(c instanceof Element) {
-            const routed = component.kompo.routed;
-            if (routed) {
-                el.replaceChild(c, routed);
-                component.kompo.mounts.splice(component.kompo.mounts.indexOf(routed, 1));
-            } else {
-                el.appendChild(c);
-            }
-
-            render(c);
-
-            if (component.kompo.mounts.indexOf(c) == -1) {
-                component.kompo.mounts.push(c);
-            }
-
-            component.kompo.routed = c;
+            _swap(component, c, element)
         } else if (c instanceof Promise) {
             c.then((rc) => {
                 rc.kompo.level = c.kompo.level;
 
-                const routed = component.kompo.routed;
-                if (routed) {
-                    el.replaceChild(rc, routed);
-                    component.kompo.mounts.splice(component.kompo.mounts.indexOf(routed, 1));
-                } else {
-                    el.appendChild(rc);
-                }
-
-                render(rc);
-
-                if (component.kompo.mounts.indexOf(rc) == -1) {
-                    component.kompo.mounts.push(rc);
-                }
-
-                component.kompo.routed = rc;
-            }).catch((one, two, three) => {
+                _swap(component, rc, element)
+            }).catch(() => {
                 console.error("Cannot dynamically load module for route")
             });
         }
     }
+}
+
+function _swap(parent: KompoElement, routedComponent: KompoElement, element: Element):void {
+    const routed = parent.kompo.routed,
+        el = element ? element : parent;
+
+    if (routed) {
+        el.replaceChild(routedComponent, routed);
+        parent.kompo.mounts.splice(parent.kompo.mounts.indexOf(routed, 1));
+    } else {
+        el.appendChild(routedComponent);
+    }
+
+    render(routedComponent);
+
+    if (parent.kompo.mounts.indexOf(routedComponent) == -1) {
+        parent.kompo.mounts.push(routedComponent);
+    }
+
+    parent.kompo.routed = routedComponent;
 }

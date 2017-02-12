@@ -9,7 +9,7 @@ import router, {route, indexRoute, swap} from '../../../src/router/router';
 
 // Example components with self-explanatory name
 import leaf from './components/leaf';
-import branch from './components/branch';
+// import branch from './components/branch';
 
 // Create root construct for navigation
 const root = construct('div', function () {
@@ -20,7 +20,9 @@ const root = construct('div', function () {
             'simple',
             'param/123',
             'branch',
-            'branch/simple',
+            'branch/leaf',
+            'branch/branch',
+            'branch/branch/leaf',
             'rooted_nested',
             'nonexisting'
         ],
@@ -74,9 +76,22 @@ const routes = route('/', root(), [
             heading: 'Nested index construct',
             input: true
         }))
-        , route('simple', leaf({
+        , route('leaf', leaf({
             heading: 'Nested simple construct'
         }))
+        , route('branch', branch()
+            // To dynamically load a component
+            // IMPORTANT: does not work as intended with the setup in examples.webpack.js
+            // require.ensure([], require => require('./components/branch').default({heading: "Nested dynamically imported"}), 'branch')
+        , [
+            indexRoute(leaf({
+                heading: 'Double nested index construct',
+                input: true
+            }))
+            , route('leaf', leaf({
+                heading: 'Double nested simple construct'
+            }))
+        ])
         // Url is very simple, although it is a nested construct
         , route('/rooted_nested', leaf({
             heading: 'Rooted nested construct'

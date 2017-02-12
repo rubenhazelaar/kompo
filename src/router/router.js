@@ -60,11 +60,11 @@ export default function construct(props:props):router {
         const children = route.children;
         const routeComponent = route.component;
 
-        if(routeComponent instanceof Element) {
+        if (routeComponent instanceof Element) {
             routeComponent.kompo.level = level;
         } else if (routeComponent instanceof Promise) {
             // Set a level to the promise
-            routeComponent.kompo = { level };
+            routeComponent.kompo = {level};
         }
 
         if (!children) return;
@@ -130,7 +130,7 @@ export default function construct(props:props):router {
                 index = parent.kompo.level + 1;
             }
 
-            if(depth) {
+            if (depth) {
                 return match(url, routes).slice(index, index + depth);
             } else {
                 return match(url, routes)[index];
@@ -145,38 +145,43 @@ export function route(path:string, component:KompoElement, children:?Array<any>)
     };
 }
 
-export function indexRoute(component: KompoElement):?{path:string; component:KompoElement; children:?Array<any>;}  {
+export function indexRoute(component:KompoElement):?{path:string; component:KompoElement; children:?Array<any>;} {
     return route('', component);
 }
 
-export function swap(component: KompoElement, router:router, element:Element):void {
+export function swap(component:KompoElement, router:router, element:Element):void {
     const c = router.get(component);
 
-    if(c) {
-        if(c instanceof Element) {
+    if (c) {
+        if (c instanceof Element) {
             _swap(component, c, element)
         } else if (c instanceof Promise) {
-            c.then((rc) => {
-                rc.kompo.level = c.kompo.level;
-
-                _swap(component, rc, element)
-            }).catch(() => {
-                console.error("Cannot dynamically load module for route")
-            });
+            if(c.kompo.resolved) {
+                _swap(component, c.kompo.resolved, element);
+            } else {
+                c.then((rc) => {
+                    rc.kompo.level = c.kompo.level;
+                    _swap(component, rc, element, true);
+                    c.kompo.resolved = rc;
+                }).catch(() => {
+                    console.error("Cannot dynamically load module for route")
+                });
+            }
         }
     }
 }
 
-function _swap(parent: KompoElement, routedComponent: KompoElement, element: Element):void {
+function _swap(parent:KompoElement, routedComponent:KompoElement, element:Element, renderWithRouted:bool = false):void {
     const routed = parent.kompo.routed,
         el = element ? element : parent;
 
     if (routed) {
+        if (renderWithRouted) render(routedComponent);
         el.replaceChild(routedComponent, routed);
         parent.kompo.mounts.splice(parent.kompo.mounts.indexOf(routed, 1));
     } else {
-        el.appendChild(routedComponent);
         render(routedComponent);
+        el.appendChild(routedComponent);
     }
 
     if (parent.kompo.mounts.indexOf(routedComponent) == -1) {

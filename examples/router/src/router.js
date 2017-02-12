@@ -49,7 +49,6 @@ const root = construct('div', function () {
     // On update swap the new 
     // routed construct
     react(this, () => {
-        console.log("LEVEL ONE SWAP");
         swap(this, r);
     });
 });

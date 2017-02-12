@@ -31,12 +31,12 @@ export default function construct(tag:string, constructFn:constructFn, defaultPr
     };
 }
 
-export function constructClass(tag:string, constructClass: any, defaultProps:props = {}):constructComponent {
+export function constructClass(tag:string, constructClass:any, defaultProps:props = {}):constructComponent {
     const methods = getMethods(constructClass.prototype);
     return (props = {}) => {
         const c = kompo(document.createElement(tag));
         c.kompo.props = merge(Object.assign({}, defaultProps), props);
-        merge(c,methods);
+        merge(c, methods);
         return c;
     };
 }
@@ -63,32 +63,28 @@ export function update(Element:KompoElement):void {
         state = selector ? selector(Element.__kompo__.state) : Element.__kompo__.state,
         isRoot = Element === Element.__kompo__.root;
 
-    for (let i = 0, l = mounts.length; i < l; ++i) {
-        render(mounts[i]);
-    }
-
     // State is false, do not run statefulls
-    if (!state) return;
-
-    // If is object and flagged dirty or not at all than do not update
-    const checkIfDirty = hasProxy?
-        isObject(state) || Array.isArray(state):
+    if (state) {
+        // If is object and flagged dirty or not at all than do not update
+        const checkIfDirty = hasProxy ?
+        isObject(state) || Array.isArray(state) :
         isObject(state) && !Array.isArray(state);
 
-    if (
-        checkIfDirty
-        && state.hasOwnProperty('__kompo_dirty__')
-        && state.__kompo_dirty__.length === 0
-    ) {
-        if (isRoot) {
-            markClean(state);
+        if ((
+            checkIfDirty
+            && state.hasOwnProperty('__kompo_dirty__')
+            && state.__kompo_dirty__.length === 0
+        )) {
+        } else {
+            const statefulls = kompo.statefulls;
+            for (let i = 0, l = statefulls.length; i < l; ++i) {
+                statefulls[i](state, Element);
+            }
         }
-        return;
     }
 
-    const statefulls = kompo.statefulls;
-    for (let i = 0, l = statefulls.length; i < l; ++i) {
-        statefulls[i](state, Element);
+    for (let i = 0, l = mounts.length; i < l; ++i) {
+        render(mounts[i]);
     }
 
     if (isRoot) {
@@ -122,8 +118,8 @@ export function setState(Element:KompoElement, selector:selector):void {
 
 export function getState(Element:KompoElement):any {
     const selector = Element.kompo.selector;
-    return  selector?
-        selector(Element.__kompo__.state):
+    return selector ?
+        selector(Element.__kompo__.state) :
         Element.__kompo__.state
 }
 
@@ -143,7 +139,7 @@ export function mount(parent:KompoElement, child:KompoElement|Array<KompoElement
         el = parent;
     }
 
-    if(Array.isArray(child)) {
+    if (Array.isArray(child)) {
         _mountAll(parent, el, child, selector);
     } else {
         _mount(parent, el, child, selector)
@@ -173,8 +169,8 @@ function _mountAll(parent:KompoElement, Element:Element, children:Array<KompoEle
     const frag = document.createDocumentFragment();
 
     // Mount all children ...
-    for(let i = 0, l = children.length; i < l; ++i) {
-        _mount(parent, frag, children[i], selector? selector(i): undefined);
+    for (let i = 0, l = children.length; i < l; ++i) {
+        _mount(parent, frag, children[i], selector ? selector(i) : undefined);
     }
 
     // ... append to DOM in one go
@@ -183,7 +179,7 @@ function _mountAll(parent:KompoElement, Element:Element, children:Array<KompoEle
 
 export function unmount(Element:KompoElement):void {
     const unm = Element.kompo.unmount;
-    if(unm) {
+    if (unm) {
         unm(Element);
     }
 }
@@ -193,7 +189,7 @@ export function unmountAll(Element:KompoElement):void {
 }
 
 export function mountIndex(parent:KompoElement, child:KompoElement):Number {
-    return parent.kompo.mounts.indexOf(child);    
+    return parent.kompo.mounts.indexOf(child);
 }
 
 export function react(Element:KompoElement, statefull:statefull):void {
@@ -203,19 +199,19 @@ export function react(Element:KompoElement, statefull:statefull):void {
     kompo.statefulls.push(statefull);
     statefull(
         selector ?
-            selector(Element.__kompo__.state):
+            selector(Element.__kompo__.state) :
             Element.__kompo__.state
-        ,Element
+        , Element
     );
 }
 
 /**
- * Mimics the slot functionality of 
+ * Mimics the slot functionality of
  * Web Components
- * 
- * Slots are named, their name & location is 
+ *
+ * Slots are named, their name & location is
  * predefined in the component.
- * 
+ *
  * @param Element
  * @param name
  * @param cb
@@ -230,19 +226,19 @@ export function slot(Element:KompoElement, name:string, cb:?slotCallback):void {
 
 /**
  * Checks whether a slot with the given name exists
- * 
+ *
  * @param Element
  * @param name
  * @returns {boolean}
  */
 export function hasSlot(Element:KompoElement, name:string):boolean {
-    return Element.kompo.slots[name]? true: false;
+    return Element.kompo.slots[name] ? true : false;
 }
 
 /**
- * Gets the router from an Element. The router is 
+ * Gets the router from an Element. The router is
  * add globally to the Element prototype
- * 
+ *
  * @param Element
  * @returns {router}
  */
@@ -254,12 +250,12 @@ export function getRouter(Element:KompoElement):router {
  * Adds properties to an existing component,
  * making it possible to compose a component with
  * different behavior.
- * 
+ *
  * @param constructComponent
  * @param composeProps
  * @returns {function()}
  */
-export function compose(constructComponent: constructComponent, composeProps:props): constructComponent {
+export function compose(constructComponent:constructComponent, composeProps:props):constructComponent {
     return (props = {}) => {
         return constructComponent(merge(composeProps, props));
     };
@@ -270,7 +266,7 @@ export function append(parent:KompoElement, child:KompoElement):void {
     parent.appendChild(child);
 }
 
-export function getProps(Element:KompoElement): props {
+export function getProps(Element:KompoElement):props {
     return Element.kompo.props;
 }
 
@@ -284,9 +280,9 @@ export function getMethods(clss) {
         const ps = Object.getOwnPropertyNames(obj);
 
         const fps = [];
-        for(let i = 0, l = ps.length; i < l; ++i) {
+        for (let i = 0, l = ps.length; i < l; ++i) {
             const p = ps[i];
-            if(
+            if (
                 typeof obj[p] === 'function'    //only the methods
                 && p != 'constructor'           //not the constructor
                 && (i == 0 || p !== ps[i - 1])  //not overriding in this prototype
@@ -299,31 +295,31 @@ export function getMethods(clss) {
 
         props.push.apply(props, fps);
     } while (
-        (obj = Object.getPrototypeOf(obj)) &&   //walk-up the prototype chain
-        Object.getPrototypeOf(obj)              //not the the Object prototype methods (hasOwnProperty, etc...)
-    );
+    (obj = Object.getPrototypeOf(obj)) &&   //walk-up the prototype chain
+    Object.getPrototypeOf(obj)              //not the the Object prototype methods (hasOwnProperty, etc...)
+        );
 
     return methods;
 }
 
-export function children(Element:KompoElement, children: Array<any>):KompoElement {
+export function children(Element:KompoElement, children:Array<any>):KompoElement {
     Element.kompo.children = children;
     return Element;
 }
 
 export function appendChildren(Element:KompoElement, useFragment:bool) {
     const children = Element.kompo.children,
-        parent = useFragment? document.createDocumentFragment(): Element;
+        parent = useFragment ? document.createDocumentFragment() : Element;
 
-    for(let i = 0, l = children.length; i < l; ++i) {
+    for (let i = 0, l = children.length; i < l; ++i) {
         const child = children[i];
-        if(child.hasOwnProperty('kompo')) {
+        if (child.hasOwnProperty('kompo')) {
             render(child);
         }
         parent.appendChild(child);
     }
 
-    if(useFragment) {
+    if (useFragment) {
         Element.appendChild(parent);
     }
 } 

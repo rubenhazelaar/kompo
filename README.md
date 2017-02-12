@@ -220,9 +220,13 @@ For more complex situations events can also be delegated. Use the delegate funct
 
 WIP
 
+## Changelog
+
+- Version 1.2.1: Added code splitting functionality in router functions 
+- Version 1.3.0: Change to rendering from bottom-up to top-down. Can break components considerably 
+
 ## Todo
 
-- Implement support for Webpack System.import for lazy loading/code splitting routes http://moduscreate.com/code-splitting-for-react-router-with-es6-imports/
 - Observe only certain props, how?
 
 - Implement babel babili and compile using https://github.com/babel/babel-preset-env 

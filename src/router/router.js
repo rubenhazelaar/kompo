@@ -176,9 +176,8 @@ function _swap(parent: KompoElement, routedComponent: KompoElement, element: Ele
         parent.kompo.mounts.splice(parent.kompo.mounts.indexOf(routed, 1));
     } else {
         el.appendChild(routedComponent);
+        render(routedComponent);
     }
-
-    render(routedComponent);
 
     if (parent.kompo.mounts.indexOf(routedComponent) == -1) {
         parent.kompo.mounts.push(routedComponent);

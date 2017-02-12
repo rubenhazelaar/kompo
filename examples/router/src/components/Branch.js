@@ -13,7 +13,6 @@ export default construct('div', function ({heading}) {
 
     const r = getRouter(this);
     react(this, () => {
-        console.log("LEVEL TWO SWAP");
         swap(this, r);
     });
 }, {

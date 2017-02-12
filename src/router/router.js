@@ -130,10 +130,13 @@ export default function construct(props:props):router {
                 index = parent.kompo.level + 1;
             }
 
+            const m = match(url, routes);
+
             if (depth) {
-                return match(url, routes).slice(index, index + depth);
+                if (depth < 0) return m.slice(index - depth, index + 1);
+                return m.slice(index, index + depth);
             } else {
-                return match(url, routes)[index];
+                return m[index];
             }
         }
     }

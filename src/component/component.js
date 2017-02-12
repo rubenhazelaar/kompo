@@ -70,12 +70,11 @@ export function update(Element:KompoElement):void {
         isObject(state) || Array.isArray(state) :
         isObject(state) && !Array.isArray(state);
 
-        if ((
+        if (!(
             checkIfDirty
             && state.hasOwnProperty('__kompo_dirty__')
             && state.__kompo_dirty__.length === 0
         )) {
-        } else {
             const statefulls = kompo.statefulls;
             for (let i = 0, l = statefulls.length; i < l; ++i) {
                 statefulls[i](state, Element);

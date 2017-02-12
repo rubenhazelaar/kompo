@@ -4,7 +4,7 @@ import dispatch from '../../../src/state/dispatch';
 import app from '../../../src/state/app';
 
 // Router classes and components
-import router, {route, indexRoute, swap} from '../../../src/router/router';
+import router, {route, indexRoute, swap, loadComponent} from '../../../src/router/router';
 // import link from '../../../src/router/link';
 
 // Example components with self-explanatory name
@@ -67,10 +67,10 @@ const routes = route('/', root(), [
         heading: 'Route with a param, shown in Component'
     }))
     , route('branch', branch()
-    // ()  => {
-    //     return System.import('./components/branch');
-    // }
-    ,[
+        // To dynamically load a component
+        // IMPORTANT: does not work as intended with the setup in examples.webpack.js
+        // require.ensure([], require => require('./components/branch').default({heading: "Dynamically imported"}), 'branch')
+    , [
         indexRoute(leaf({
             heading: 'Nested index construct',
             input: true

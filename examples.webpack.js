@@ -21,6 +21,7 @@ var config = {
     },
     output: {
         path: './',
+        chunkFilename: '[name].js',
         filename: '[name].js',
         library: 'kompo',
         libraryTarget: 'umd'

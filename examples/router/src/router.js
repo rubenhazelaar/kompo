@@ -4,7 +4,7 @@ import dispatch from '../../../src/state/dispatch';
 import app from '../../../src/state/app';
 
 // Router classes and components
-import router, {route, indexRoute, swap} from '../../../src/router/router';
+import router, {route, indexRoute, swap, loadComponent} from '../../../src/router/router';
 // import link from '../../../src/router/link';
 
 // Example components with self-explanatory name
@@ -49,6 +49,7 @@ const root = construct('div', function () {
     // On update swap the new 
     // routed construct
     react(this, () => {
+        console.log("LEVEL ONE SWAP");
         swap(this, r);
     });
 });
@@ -65,7 +66,11 @@ const routes = route('/', root(), [
     , route('param/:param', leaf({
         heading: 'Route with a param, shown in Component'
     }))
-    , route('branch', branch(), [
+    , route('branch', branch()
+        // To dynamically load a component
+        // IMPORTANT: does not work as intended with the setup in examples.webpack.js
+        // require.ensure([], require => require('./components/branch').default({heading: "Dynamically imported"}), 'branch')
+    , [
         indexRoute(leaf({
             heading: 'Nested index construct',
             input: true

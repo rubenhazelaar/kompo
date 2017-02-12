@@ -222,13 +222,17 @@ WIP
 
 ## Todo
 
-- Can Kompo component by extended by aclass for custom elements?
+- Implement support for Webpack System.import for lazy loading/code splitting routes http://moduscreate.com/code-splitting-for-react-router-with-es6-imports/
+- Observe only certain props, how?
+
+- Implement babel babili and compile using https://github.com/babel/babel-preset-env 
+
+- Can Kompo component by extended by a class for custom elements?
 - Change order of appendChild and render() in mount and append functions?
+    >>> NO, in order to prevent multiple reflows, YES in component.mount()
 - Inline documentation
 - API Reference
 - AJAX example (using Fetch API)
-- Make router appropriate for other routing mechanism instead of only swap()
-    - return selected component AND children
 
 ## Contribute
 

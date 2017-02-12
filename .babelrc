@@ -2,7 +2,7 @@
     "presets": [
         ["env", {
             "targets": {
-                "browser": "> 1%"
+                "browser": "defaults"
             }
         }]
     ],

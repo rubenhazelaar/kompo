@@ -33,6 +33,7 @@ import observe, {
 import hasProxy from './util/hasProxy';
 import isObject from './util/isObject';
 import merge from './util/merge';
+import isFunction from './util/isFunction';
 
 const router = {
     construct: constructRouter
@@ -54,6 +55,7 @@ const util = {
     hasProxy
     ,isObject
     ,merge
+    ,isFunction
 };
 
 export default {

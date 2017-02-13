@@ -5,7 +5,6 @@ import app from '../../../src/state/app';
 
 // Router classes and components
 import router, {route, indexRoute, swap} from '../../../src/router/router';
-// import link from '../../../src/router/link';
 
 // Example components with self-explanatory name
 import leaf from './components/leaf';
@@ -51,6 +50,7 @@ const root = construct('div', function () {
     // On update swap the new 
     // routed construct
     react(this, () => {
+        console.log("SWAP ONE");
         swap(this, r);
     });
 });
@@ -122,3 +122,14 @@ document.body.appendChild(ro);
 
 // Set the state (including the router) to the root construct
 app(ro, state, r).start();
+
+// Listen to popstate event to make sure the page render when the
+// user goes through it's history
+window.addEventListener('popstate', ()=>{
+    // Just update the whole tree from the root up.
+    if (r.setTo(window.location.pathname)) {
+        dispatch(ro, state => {
+            state.url = r.getUrl();
+        });    
+    }
+});

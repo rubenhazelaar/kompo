@@ -1,6 +1,7 @@
 // @flow
 import merge from '../util/merge';
 import {render} from '../component/component';
+import isFunction from '../util/isFunction';
 
 export default function construct(props:props):router {
     props = merge({
@@ -62,7 +63,7 @@ export default function construct(props:props):router {
 
         if (routeComponent instanceof Element) {
             routeComponent.kompo.level = level;
-        } else if (routeComponent instanceof Promise) {
+        } else if (routeComponent instanceof Promise || isFunction(routeComponent)) {
             // Set a level to the promise
             routeComponent.kompo = {level};
         }
@@ -117,6 +118,14 @@ export default function construct(props:props):router {
     return {
         getParams: () => params,
         isUrl,
+        getUrl: () => url,
+        setTo: (u: string) => {
+            u = u.replace(base,'');
+            if (isUrl(u)) return false;
+
+            setUrl(u);
+            return true;
+        },
         goTo: (u, title = '', data = null) => {
             if (isUrl(u)) return false;
 
@@ -153,9 +162,13 @@ export function indexRoute(component:KompoElement):?{path:string; component:Komp
 }
 
 export function swap(component:KompoElement, router:router, element:Element):void {
-    const c = router.get(component);
+    let c = router.get(component);
 
     if (c) {
+        if (isFunction(c)) {{
+            c = _toPromise(c);
+        }}
+
         if (c instanceof Element) {
             _swap(component, c, element)
         } else if (c instanceof Promise) {
@@ -172,6 +185,15 @@ export function swap(component:KompoElement, router:router, element:Element):voi
             }
         }
     }
+}
+
+function _toPromise(fn: () => Promise): Promise {
+    const pr = fn();
+
+    // Transfer kompo object including level to the promise
+    pr.kompo = {level: fn.kompo.level};
+
+    return pr
 }
 
 function _swap(parent:KompoElement, routedComponent:KompoElement, element:Element, renderWithRouted:bool = false):void {

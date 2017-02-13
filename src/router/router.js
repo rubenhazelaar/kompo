@@ -162,10 +162,11 @@ export function indexRoute(component:KompoElement):?{path:string; component:Komp
 }
 
 export function swap(component:KompoElement, router:router, element:Element):void {
-    let c = router.get(component);
+    let c = router.get(component), fn;
 
     if (c) {
         if (isFunction(c)) {{
+            fn = c;
             c = _toPromise(c);
         }}
 
@@ -179,6 +180,7 @@ export function swap(component:KompoElement, router:router, element:Element):voi
                     rc.kompo.level = c.kompo.level;
                     _swap(component, rc, element, true);
                     c.kompo.resolved = rc;
+                    if(fn) fn.kompo.resolved = rc;
                 }).catch(() => {
                     console.error("Cannot dynamically load module for route")
                 });
@@ -191,7 +193,7 @@ function _toPromise(fn: () => Promise): Promise {
     const pr = fn();
 
     // Transfer kompo object including level to the promise
-    pr.kompo = {level: fn.kompo.level};
+    pr.kompo = fn.kompo;
 
     return pr
 }

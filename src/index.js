@@ -18,6 +18,7 @@ import construct, {
     ,children
     ,appendChildren
 } from './component/component';
+import link from './router/link';
 import constructRouter, {
     route
     ,indexRoute 
@@ -40,6 +41,7 @@ const router = {
     ,route
     ,indexRoute
     ,swap
+    ,link
 };
 
 const state = {

@@ -26,13 +26,14 @@ export default function construct(props:props):router {
 
     function setBase(b) {
         if (b[0] !== '/') {
-            base = '/' + b;
-            return;
+            b = '/' + b;
         }
 
         if (b.slice(-1) === '/') {
-            base = b.slice(0, -1);
+            b = b.slice(0, -1);
         }
+
+        base = b
     }
 
     function setUrl(u) {

@@ -143,7 +143,8 @@ export default function construct(props:props):router {
             const m = match(url, routes);
 
             if (depth) {
-                if (depth < 0) return m.slice(index - depth, index + 1);
+                // For negative values, do + because index-(-depth) will be positive instead of negative
+                if (depth < 0) return m.slice(index + depth, index + 1);
                 return m.slice(index, index + depth);
             } else {
                 return m[index];

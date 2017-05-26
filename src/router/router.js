@@ -33,7 +33,7 @@ export default function construct(props:props):router {
             b = b.slice(0, -1);
         }
 
-        base = b
+        base = b;
     }
 
     function setUrl(u) {
@@ -58,7 +58,7 @@ export default function construct(props:props):router {
         }
     }
 
-    function buildPath(route, ancestors = [], level = 0) {
+    function buildPath(route, ancestors = [], hierarchy = [],level = 0) {
         const children = route.children;
         const routeComponent = route.component;
 
@@ -78,7 +78,9 @@ export default function construct(props:props):router {
             const childRoute = children[i],
                 componentPath = !isRoot ?
                     ancestors.concat(childRoute.component) :
-                    ancestors.concat(routeComponent, childRoute.component);
+                    ancestors.concat(routeComponent, childRoute.component),
+                childHierarchy = hierarchy.concat(i);
+            
             let path;
 
             if (childRoute.path[0] === '/') {
@@ -92,8 +94,11 @@ export default function construct(props:props):router {
             }
 
             childRoute.path = path;
-            rawRoutes[path] = componentPath;
-            buildPath(childRoute, componentPath, level + 1);
+            rawRoutes[path] = {
+                components: componentPath,
+                hierarchy: childHierarchy
+            };
+            buildPath(childRoute, componentPath, childHierarchy, level + 1);
         }
     }
 
@@ -116,6 +121,19 @@ export default function construct(props:props):router {
         return []; // Return empty array to keep it all running
     }
 
+    function getSiblingRoutes(hierarchy) {
+        return scanSiblingsRoutes(hierarchy, props.routes);
+    }
+
+    function scanSiblingsRoutes(hierarchy, parentRoute) {
+        hierarchy = hierarchy.slice(); // Slice in order to prevent editing original array
+        if (hierarchy.length === 1) {
+            return parentRoute.children
+        }
+        
+        return scanSiblingsRoutes(hierarchy, parentRoute.children[hierarchy.shift()])
+    }
+
     return {
         getParams: () => params,
         isUrl,
@@ -135,19 +153,30 @@ export default function construct(props:props):router {
             history.pushState(data, title, base + url);
             return true;
         },
-        get: (parent, depth) => {
+        get: (parent, depth, includeSiblings) => {
             if (parent instanceof Element) {
                 index = parent.kompo.level + 1;
             }
 
-            const m = match(url, routes);
+            const md = match(url, routes),
+                mc = md.components;
 
             if (depth) {
+                if (includeSiblings) {
+                    mc[index] = {
+                        component: mc[index],
+                        siblings: getSiblingRoutes(md.hierarchy)
+                    }
+                }
                 // For negative values, do + because index-(-depth) will be positive instead of negative
-                if (depth < 0) return m.slice(index + depth, index + 1);
-                return m.slice(index, index + depth);
+                if (depth < 0) return mc.slice(index + depth, index + 1);
+                return mc.slice(index, index + depth);
             } else {
-                return m[index];
+                return includeSiblings?
+                {
+                    component: mc[index],
+                    siblings: getSiblingRoutes(md.hierarchy)
+                }: mc[index];
             }
         }
     }
@@ -167,10 +196,10 @@ export function swap(component:KompoElement, router:router, element:Element):voi
     let c = router.get(component), fn;
 
     if (c) {
-        if (isFunction(c)) {{
+        if (isFunction(c)) {
             fn = c;
             c = _toPromise(c);
-        }}
+        }
 
         if (c instanceof Element) {
             _swap(component, c, element)
@@ -203,6 +232,8 @@ function _toPromise(fn: () => Promise): Promise {
 function _swap(parent:KompoElement, routedComponent:KompoElement, element:Element, renderWithRouted:bool = false):void {
     const routed = parent.kompo.routed,
         el = element ? element : parent;
+
+    if (routed === routedComponent) return;
 
     if (routed) {
         if (renderWithRouted) render(routedComponent);

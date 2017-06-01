@@ -121,17 +121,17 @@ export default function construct(props:props):router {
         return []; // Return empty array to keep it all running
     }
 
-    function getSiblingRoutes(hierarchy) {
-        return scanSiblingsRoutes(hierarchy, props.routes);
+    function getSiblingRoutes(hierarchy, index) {
+        return scanSiblingsRoutes(hierarchy, props.routes, index - 1, 0);
     }
 
-    function scanSiblingsRoutes(hierarchy, parentRoute) {
+    function scanSiblingsRoutes(hierarchy, parentRoute, toIndex, currentIndex) {
         hierarchy = hierarchy.slice(); // Slice in order to prevent editing original array
-        if (hierarchy.length === 1) {
+        if (currentIndex  === toIndex) {
             return parentRoute.children
         }
         
-        return scanSiblingsRoutes(hierarchy, parentRoute.children[hierarchy.shift()])
+        return scanSiblingsRoutes(hierarchy, parentRoute.children[hierarchy.shift()], toIndex, currentIndex + 1)
     }
 
     return {
@@ -165,7 +165,7 @@ export default function construct(props:props):router {
                 if (includeSiblings) {
                     mc[index] = {
                         component: mc[index],
-                        siblings: getSiblingRoutes(md.hierarchy)
+                        siblings: getSiblingRoutes(md.hierarchy, index)
                     }
                 }
                 // For negative values, do + because index-(-depth) will be positive instead of negative
@@ -175,7 +175,7 @@ export default function construct(props:props):router {
                 return includeSiblings?
                 {
                     component: mc[index],
-                    siblings: getSiblingRoutes(md.hierarchy)
+                    siblings: getSiblingRoutes(md.hierarchy, index)
                 }: mc[index];
             }
         }

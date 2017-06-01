@@ -188,8 +188,8 @@ export function route(path:string, component:KompoElement, children:?Array<any>)
     };
 }
 
-export function indexRoute(component:KompoElement):?{path:string; component:KompoElement; children:?Array<any>;} {
-    return route('', component);
+export function indexRoute(component:KompoElement, children:?Array<any>):?{path:string; component:KompoElement; children:?Array<any>;} {
+    return route('', component, children);
 }
 
 export function swap(component:KompoElement, router:router, element:Element):void {

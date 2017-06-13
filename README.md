@@ -227,6 +227,8 @@ WIP
 
 ## Todo
 
+- Props for routes (like title, page, etc.)
+
 - Observe only certain props, how?
 
 - Implement babel babili and compile using https://github.com/babel/babel-preset-env 

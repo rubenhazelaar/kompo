@@ -2,6 +2,7 @@
 import merge from '../util/merge';
 import hasProxy from '../util/hasProxy';
 import isObject from '../util/isObject';
+import isFunction from '../util/isFunction';
 import {markClean} from '../state/observe';
 
 /**
@@ -130,19 +131,31 @@ export function mount(
     apply:?boolean = true
 ):void {
     let el;
-    if (
-        arguments.length >= 3
-        && (
-            Array.isArray(selector)
-            || selector instanceof Element
-        )
-    ) {
-        el = child;
-        child = selector;
-        selector: selector = sel;
-    } else {
-        el = parent;
-        apply = sel;
+
+    const l = arguments.length,
+        selectorIsFn = isFunction(selector);
+
+    switch(true) {
+        case (l === 2):
+            el = parent;
+            break;
+        case (l >= 3):
+            if(selectorIsFn) {
+                el = parent;
+                apply = true;
+            } else {
+                el = child;
+                child = selector;
+            }
+        case (l >= 4):
+            if(selectorIsFn) {
+                apply = sel !== false;
+            } else {
+                selector = sel;
+            }
+        case (l === 5):
+            apply = apply !== false;
+            break;
     }
 
     if (Array.isArray(child)) {

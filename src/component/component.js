@@ -189,7 +189,7 @@ function _mountAll(parent:KompoElement, Element:Element, children:Array<KompoEle
 
     // Mount all children ...
     for (let i = 0, l = children.length; i < l; ++i) {
-        _mount(parent, frag, children[i], selector ? selector(i) : undefined, apply);
+        _mount(parent, frag, children[i], selector? selector: undefined, apply);
     }
 
     // ... append to DOM in one go

@@ -140,7 +140,7 @@ export function mount(
             el = parent;
             break;
         case (l >= 3):
-            if(selectorIsFn) {
+            if(selectorIsFn || typeof selector === 'undefined') {
                 el = parent;
                 apply = true;
             } else {

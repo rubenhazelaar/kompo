@@ -109,9 +109,9 @@ export function kompo(Element:Element):KompoElement {
     return Element;
 }
 
-export function setState(Element:KompoElement, selector:selector):void {
+export function setState(Element:KompoElement, selector:selector, apply:boolean = true):void {
     const kompo = Element.kompo;
-    kompo.state = selector(Element.__kompo__.state);
+    if(apply) kompo.state = selector(Element.__kompo__.state);
     kompo.selector = selector;
 }
 
@@ -122,7 +122,13 @@ export function getState(Element:KompoElement):any {
         Element.__kompo__.state
 }
 
-export function mount(parent:KompoElement, child:KompoElement|Array<KompoElement>, selector:?selector|KompoElement|Array<KompoElement>, sel:?selector):void {
+export function mount(
+    parent:KompoElement,
+    child:KompoElement|Array<KompoElement>,
+    selector:?selector|KompoElement|Array<KompoElement>,
+    sel:?selector|boolean,
+    apply:?boolean = true
+):void {
     let el;
     if (
         arguments.length >= 3
@@ -136,18 +142,19 @@ export function mount(parent:KompoElement, child:KompoElement|Array<KompoElement
         selector: selector = sel;
     } else {
         el = parent;
+        apply = sel;
     }
 
     if (Array.isArray(child)) {
-        _mountAll(parent, el, child, selector);
+        _mountAll(parent, el, child, selector, apply);
     } else {
-        _mount(parent, el, child, selector)
+        _mount(parent, el, child, selector, apply)
     }
 }
 
-function _mount(parent:KompoElement, Element:KompoElement, child:KompoElement, selector:?selector):void {
+function _mount(parent:KompoElement, Element:KompoElement, child:KompoElement, selector:?selector, apply:boolean):void {
     if (selector) {
-        setState(child, selector);
+        setState(child, selector, apply);
     }
 
     render(child);
@@ -164,12 +171,12 @@ function _mount(parent:KompoElement, Element:KompoElement, child:KompoElement, s
     }
 }
 
-function _mountAll(parent:KompoElement, Element:Element, children:Array<KompoElement>, selector:?selector):void {
+function _mountAll(parent:KompoElement, Element:Element, children:Array<KompoElement>, selector:?selector, apply:boolean):void {
     const frag = document.createDocumentFragment();
 
     // Mount all children ...
     for (let i = 0, l = children.length; i < l; ++i) {
-        _mount(parent, frag, children[i], selector ? selector(i) : undefined);
+        _mount(parent, frag, children[i], selector ? selector(i) : undefined, apply);
     }
 
     // ... append to DOM in one go

@@ -229,6 +229,8 @@ WIP
 
 - Props for routes (like title, page, etc.)
 
+- Util function for chaining selectors?
+
 - Observe only certain props, how?
 
 - Implement babel babili and compile using https://github.com/babel/babel-preset-env 

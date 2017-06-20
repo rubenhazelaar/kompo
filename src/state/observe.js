@@ -119,7 +119,7 @@ export function inheritObserved(obj:any, ignored: Array<any> = []): any {
         const key = keys[i],
             value = obj[key];
 
-        if(ignored.indexOf(key) > -1) continue;
+        if(ignored.indexOf(key) !== -1) continue;
 
         if(typeof value === 'undefined') return;
 

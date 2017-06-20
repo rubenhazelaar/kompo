@@ -110,10 +110,11 @@ export function kompo(Element:Element):KompoElement {
     return Element;
 }
 
-export function setState(Element:KompoElement, selector:selector, apply:boolean = true):void {
+export function setState(Element:KompoElement, selector:selector, apply:boolean = true):KompoElement {
     const kompo = Element.kompo;
     if(apply) kompo.state = selector(Element.__kompo__.state);
     kompo.selector = selector;
+    return Element;
 }
 
 export function getState(Element:KompoElement):any {

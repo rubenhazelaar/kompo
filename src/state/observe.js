@@ -156,5 +156,11 @@ export function markClean(obj: any): void {
 }
 
 export function markDirty(obj:any): void {
+    if (!obj.hasOwnProperty('__kompo_dirty__')) {
+        Object.defineProperty(obj, '__kompo_dirty__', {
+            writable: true,
+            value: []
+        });
+    }
     obj.__kompo_dirty__.push(true);
 }

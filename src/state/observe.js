@@ -156,7 +156,7 @@ export function markClean(obj: any): void {
 }
 
 export function markDirty(obj:any): void {
-    if (!isObj && !isArray) return obj; // A no-op on all but Object and Arrays
+    if (!isObject(obj)) return; // A no-op on all but Object and Arrays
 
     if (!obj.hasOwnProperty('__kompo_dirty__')) {
         Object.defineProperty(obj, '__kompo_dirty__', {

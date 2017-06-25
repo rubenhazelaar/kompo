@@ -1,6 +1,6 @@
 {
   "name": "kompo",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "Kompo is a react like library which tries to stay simple as possible. No virtual DOM or JSX. Kompo loves the DOM.",
   "main": "./lib/index.js",
   "repository": {

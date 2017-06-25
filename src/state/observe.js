@@ -74,6 +74,8 @@ export default function observe(obj:any) {
 }
 
 function observeObjectFallback(obj: any): any {
+    if (!isObject(obj)) return; // A no-op when it id not an object
+
     const keys = Object.keys(obj);
     for (let i = 0, l = keys.length; i < l; ++i) {
         const key = keys[i],

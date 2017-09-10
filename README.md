@@ -227,6 +227,8 @@ WIP
 
 ## Todo
 
+- Remove append function from component.js (Add to kompo-util with tab component functions as example)
+
 - Props for routes (like title, page, etc.)
 
 - Util function for chaining selectors?

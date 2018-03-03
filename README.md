@@ -229,7 +229,6 @@ WIP
 
 - Provide more structure to component lifecycle
     - Add custom state setting (through setState) in a special array like statefulls (react functions) and mounts. Then launch these at the right moment
-     - Mount function should not do an appendChild call
     - Improved method for adding child components (like a form component with predefined children input components)
 
 - Remove append function from component.js (Add to kompo-util with tab component functions as example)

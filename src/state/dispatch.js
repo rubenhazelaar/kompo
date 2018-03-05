@@ -10,5 +10,5 @@ export default function dispatch(Element:KompoElement, cb:(state:state)=>void, n
     if (!state) return;
 
     cb(state);
-    if (!noRender) render(Element.__kompo__.root);
+    if (!noRender) requestAnimationFrame(() => {render(Element.__kompo__.root)});
 }

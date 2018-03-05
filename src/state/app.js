@@ -19,7 +19,7 @@ export default function app(root:KompoElement, state:any, router:?router):{start
             if(selector) {
                 setState(root, selector);
             }
-            render(root);
+            requestAnimationFrame(() => {render(root)});
             return root
         }
     };

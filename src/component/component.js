@@ -2,7 +2,6 @@
 import merge from '../util/merge';
 import hasProxy from '../util/hasProxy';
 import isObject from '../util/isObject';
-import isFunction from '../util/isFunction';
 import {markClean} from '../state/observe';
 
 /**
@@ -26,7 +25,7 @@ Object.defineProperty(Element.prototype, 'construct', {
 export default function construct(tag:string, constructFn:constructFn, defaultProps:props = {}):constructComponent {
     return (props = {}) => {
         const c = kompo(document.createElement(tag));
-        c.kompo.props = merge(Object.assign({}, defaultProps), props);
+        c.kompo.props = merge({}, defaultProps, props);
         c.construct = constructFn;
         return c;
     };
@@ -36,7 +35,7 @@ export function constructClass(tag:string, constructClass:any, defaultProps:prop
     const methods = getMethods(constructClass.prototype);
     return (props = {}) => {
         const c = kompo(document.createElement(tag));
-        c.kompo.props = merge(Object.assign({}, defaultProps), props);
+        c.kompo.props = merge({}, defaultProps, props);
         merge(c, methods);
         return c;
     };
@@ -50,8 +49,29 @@ export function constructClass(tag:string, constructClass:any, defaultProps:prop
 export function render(Element:KompoElement):void {
     const kompo = Element.kompo;
     if (kompo.initial) {
+        console.groupCollapsed('RENDER: ');
+        console.log(Element);
+        console.log(kompo);
+        // Construct then ...
+        console.groupCollapsed('CONSTRUCT: ');
         Element.construct(kompo.props);
         kompo.initial = false;
+        console.groupEnd();
+
+        // ... react
+        const statefulls = kompo.statefulls,
+            selector = kompo.selector,
+            state = selector ? selector(Element.__kompo__.state) : Element.__kompo__.state;
+        
+        if (statefulls.length > 0 && state) {
+            console.log('HAS STATE: ', state);
+            console.groupCollapsed('REACTS: ');
+            for (let i = 0, l = statefulls.length; i < l; ++i) {
+                statefulls[i](state, Element);
+            }
+            console.groupEnd();
+        }
+        console.groupEnd();
     } else {
         update(Element)
     }
@@ -59,36 +79,56 @@ export function render(Element:KompoElement):void {
 
 export function update(Element:KompoElement):void {
     const kompo = Element.kompo,
-        mounts = kompo.mounts,
-        selector = kompo.selector,
-        state = selector ? selector(Element.__kompo__.state) : Element.__kompo__.state,
+        statefulls = kompo.statefulls,
         isRoot = Element === Element.__kompo__.root;
 
-    // State is false, do not run statefulls
-    if (state) {
-        // If is object and flagged dirty or not at all than do not update
-        const checkIfDirty = hasProxy ?
-        isObject(state) || Array.isArray(state) :
-        isObject(state) && !Array.isArray(state);
+    console.groupCollapsed('UPDATE: ');
+    console.log(Element);
+    console.log(kompo);
 
-        if (!(
-            checkIfDirty
-            && state.hasOwnProperty('__kompo_dirty__')
-            && state.__kompo_dirty__.length === 0
-        )) {
-            const statefulls = kompo.statefulls;
-            for (let i = 0, l = statefulls.length; i < l; ++i) {
-                statefulls[i](state, Element);
+    // Only run if a component has statefulls
+    if (statefulls.length > 0) {
+        const selector = kompo.selector,
+            state = selector ? selector(Element.__kompo__.state) : Element.__kompo__.state;
+
+        console.log('HAS STATE: ', state);
+
+        // State is false, do not run statefulls
+        if (state) {
+            // If is object and flagged dirty or not at all than do not update
+            const checkIfDirty = hasProxy?
+                isObject(state) || Array.isArray(state):
+                isObject(state) && !Array.isArray(state);
+    
+            if (!(
+                checkIfDirty
+                && state.hasOwnProperty('__kompo_dirty__')
+                && state.__kompo_dirty__.length === 0
+            )) {
+                console.log('_STATE_IS_DIRTY_');
+                console.groupCollapsed('REACTS: ');
+                for (let i = 0, l = statefulls.length; i < l; ++i) {
+                    statefulls[i](state, Element);
+                }
+                console.groupEnd();
             }
         }
     }
 
-    for (let i = 0, l = mounts.length; i < l; ++i) {
-        render(mounts[i]);
+    const mounts = kompo.mounts;
+    if(mounts.length > 0) {
+        console.groupCollapsed('MOUNTS: ');
+        for (let i = 0, l = mounts.length; i < l; ++i) {
+            render(mounts[i]);
+        }
+        console.groupEnd();
     }
 
+    console.groupEnd();
+
     if (isRoot) {
-        markClean(state);
+        markClean(Element.__kompo__.state);
+        console.log('___END_OF_UPDATE_LOOP___');
     }
 }
 
@@ -102,16 +142,17 @@ export function kompo(Element:Element):KompoElement {
         slots: {},
         routed: undefined,
         selector: undefined,
-        state: undefined,
+        // state: undefined, // TODO Unavailable now but could perhaps be used as caching mechanism (also see setState())
         unmount: undefined
     };
 
     return Element;
 }
 
-export function setState(Element:KompoElement, selector:selector, apply:boolean = true):KompoElement {
+export function setState(Element:KompoElement, selector:selector):KompoElement {
     const kompo = Element.kompo;
-    if(apply) kompo.state = selector(Element.__kompo__.state);
+    // TODO Unavailable now but could perhaps be used as caching mechanism
+    // if(apply) kompo.state = selector(Element.__kompo__.state);
     kompo.selector = selector;
     return Element;
 }
@@ -125,24 +166,22 @@ export function getState(Element:KompoElement):any {
 
 export function mount(
     parent:KompoElement,
-    child:KompoElement|Array<KompoElement>,
-    selector:?selector|boolean,
-    apply:?boolean = true
+    child:KompoElement|Array<KompoElement>|Mountable|Array<Mountable>,
+    selector:?selector
 ):void {
-    if (!isFunction(selector)) {
-        apply = Boolean(selector);        
-    }
-
     if (Array.isArray(child)) {
-        _mountAll(parent, child, selector, apply);
+        _mountAll(parent, child, selector);
     } else {
-        _mount(parent, child, selector, apply)
+        _mount(parent, child, selector)
     }
 }
 
-function _mount(parent:KompoElement, child:KompoElement, selector:?selector, apply:boolean):void {
+function _mount(parent:KompoElement, child:KompoElement|Mountable, selector:?selector):void {
     if (selector) {
-        setState(child, selector, apply);
+        setState(child, selector);
+    } else if (child instanceof Mountable) {
+        setState(child.Element, child.selector);
+        child = child.Element;
     }
 
     render(child);
@@ -157,10 +196,10 @@ function _mount(parent:KompoElement, child:KompoElement, selector:?selector, app
     }
 }
 
-function _mountAll(parent:KompoElement, children:Array<KompoElement>, selector:?selector, apply:boolean):void {
+function _mountAll(parent:KompoElement, children:Array<KompoElement>|Array<Mountable>, selector:?selector):void {
     // Mount all children ...
     for (let i = 0, l = children.length; i < l; ++i) {
-        _mount(parent, children[i], selector? selector: undefined, apply);
+        _mount(parent, children[i], selector? selector: undefined);
     }
 }
 
@@ -180,16 +219,7 @@ export function mountIndex(parent:KompoElement, child:KompoElement):Number {
 }
 
 export function react(Element:KompoElement, statefull:statefull):void {
-    const kompo = Element.kompo,
-        selector = kompo.selector;
-
-    kompo.statefulls.push(statefull);
-    statefull(
-        selector ?
-            selector(Element.__kompo__.state) :
-            Element.__kompo__.state
-        , Element
-    );
+    Element.kompo.statefulls.push(statefull);
 }
 
 /**
@@ -282,4 +312,49 @@ export function getMethods(clss) {
         );
 
     return methods;
+}
+
+export function getMounts(Element:KompoElement):mounts {
+    return Element.kompo.mounts;
+}
+
+class Mountable {
+    Element:KompoElement;
+    selector:selector;
+    
+    constructor(Element:KompoElement, selector:selector) {
+        this.Element = Element;
+        this.selector = selector;
+    }
+}
+
+export function mountable(Element:KompoElement, selector:selector):Mountable {
+    return new Mountable(Element, selector)
+}
+
+export function debug(Element:KompoElement, level:?Number) {
+    if (!Element instanceof HTMLElement) {
+        throw new Error('Not an instance of Element');
+    }
+    
+    if (!Element.hasOwnProperty('kompo')) {
+        throw new Error('Is not a KompoElement');
+    }
+
+    const kompo = Element.kompo,
+        mounts = kompo.mounts;
+    
+    console.log(Element, kompo);
+
+    if(Number.isInteger(level) && level > 0 && mounts.length > 0) {
+        console.groupCollapsed('MOUNTS: ');
+
+        const nl = --level;
+        for(let i = 0, l = mounts.length; i < l; ++i) {
+            debug(mounts[i], nl);
+            console.log('__END_OF_MOUNT__');
+        }
+
+        console.groupEnd();
+    }
 }

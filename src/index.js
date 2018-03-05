@@ -4,6 +4,8 @@ import construct, {
     ,kompo
     ,setState
     ,mount
+    ,getMounts
+    ,mountable
     ,react
     ,slot
     ,getRouter
@@ -12,11 +14,9 @@ import construct, {
     ,mountIndex
     ,getState
     ,compose
-    ,append
     ,getProps
     ,constructClass
-    ,children
-    ,appendChildren
+    ,debug
 } from './component/component';
 import link from './router/link';
 import constructRouter, {
@@ -67,6 +67,8 @@ export default {
     ,kompo
     ,setState
     ,mount
+    ,getMounts
+    ,mountable
     ,react
     ,slot
     ,getRouter
@@ -75,11 +77,9 @@ export default {
     ,mountIndex
     ,getState
     ,compose
-    ,append
     ,getProps
     ,constructClass
-    ,children
-    ,appendChildren
+    ,debug
 };
 
 export {

@@ -1,5 +1,5 @@
 // Component and content creation classes and functions
-import construct, {mount} from '../../../src/component/component';
+import construct, {mount, debug} from '../../../src/component/component';
 import app from '../../../src/state/app';
 import dispatch from '../../../src/state/dispatch';
 
@@ -9,6 +9,7 @@ import add from './components/add';
 
 // Create root component
 const root = construct('div', function({}) {
+
     const tl = todoList({
         // Here we could overwrite the key 'todoComponent'
         // in order to compose the list with a todo construct
@@ -28,6 +29,8 @@ const root = construct('div', function({}) {
 
     mount(this, tl);
     mount(this, ta);
+    this.appendChild(tl);
+    this.appendChild(ta);
 });
 
 // An state with some todo's

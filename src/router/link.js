@@ -25,6 +25,7 @@ export default construct('a', function ({
         this.textContent = child;
     } else if (child.hasOwnProperty('kompo')) {
         mount(this, child);
+        this.appendChild(child);
     } else if (child instanceof Node) {
         this.appendChild(child);
     } else if (hasSlot(this, 'child')) {

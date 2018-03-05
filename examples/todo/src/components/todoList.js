@@ -37,23 +37,27 @@ export default construct('ul', function ({defaultClass, deleteClass, todoCompone
 
     react(this, todos => {
         // First unmount and remove all previous todos...
+        console.log(this.kompo.mounts);
         unmountAll(this);
+        console.log(this.kompo.mounts);
         empty(this);
 
         // .. and then insert the changed array of todos ...
-        const ts = [];
+        const frag = document.createDocumentFragment();
         for (let i = 0, l = todos.length; i < l; ++i) {
-            ts.push(todoComponent({
+            const t = todoComponent({
                 deleteClass
-            }));
+            });
+
+            // ... and then mount to the list
+            mount(this, t, todos => todos[i]);
+
+            // Add to a fragment
+            frag.appendChild(t);
         }
 
-        // ... and then mount to the list
-        mount(this, ts, index => {
-            return todos => {
-                return todos[index]
-            }
-        });
+        // ... and append to the list
+        this.appendChild(frag);
     });
 }, {
     defaultClass: 'TodoList',

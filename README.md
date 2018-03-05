@@ -228,22 +228,19 @@ WIP
 ## Todo
 
 - Provide more structure to component lifecycle
-    - Add custom state setting (through setState) in a special array like statefulls (react functions) and mounts. Then launch these at the right moment
-    - Improved method for adding child components (like a form component with predefined children input components)
-
-- Remove append function from component.js (Add to kompo-util with tab component functions as example)
-
+    - How to partially watch lifecycle
+        - Now it logs the complete tree
+    - Smart selectors which make it easier to pair them with the component using it
+        - Selector with function signature which defines all data it needs
+            - Call it provideX function
+    - Component class with defined methods of (structure, actions, reactions, etc.)
+        - Between constuctFn and constructClass with predefined methods 
+            - construct using new and thus constructor
 - Props for routes (like title, page, etc.)
-
 - Util function for chaining selectors?
-
 - Observe only certain props, how?
-
 - Implement babel babili and compile using https://github.com/babel/babel-preset-env 
-
 - Can Kompo component by extended by a class for custom elements?
-- Change order of appendChild and render() in mount and append functions?
-    >>> NO, in order to prevent multiple reflows, YES in component.mount()
 - Inline documentation
 - API Reference
 - AJAX example (using Fetch API)

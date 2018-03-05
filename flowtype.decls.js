@@ -2,6 +2,7 @@
  * Declare all types use in Kompo
  */
 type state = any;
+type mounts = Array<KompoElement>;
 type props = { [key: any]: any };
 type attributes = { [key: any]: any };
 type options = { [key: any]: any };
@@ -17,7 +18,7 @@ declare class KompoElement extends Element {
         initial:boolean;
         props:props;
         defaultProps:props;
-        mounts: Array<KompoElement>;
+        mounts: mounts;
         statefulls: Array<statefull>;
         slots: { [key: string]: slotCallback };
         routed: ?KompoElement;

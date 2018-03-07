@@ -42,7 +42,11 @@ var config = {
             }
         ]
     },
-    plugins: []
+    plugins: [
+        new webpack.DefinePlugin({
+            KOMPO_DEBUG: JSON.stringify(true)
+        })
+    ]
 };
 
 module.exports = config;

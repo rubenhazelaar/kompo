@@ -1,5 +1,5 @@
 // Component and content creation classes and functions
-import construct, {react, getRouter} from '../../../src/component/component';
+import construct, {react, getRouter, debugLifeCycle} from '../../../src/component/component';
 import dispatch from '../../../src/state/dispatch';
 import app from '../../../src/state/app';
 
@@ -61,9 +61,9 @@ const routes = route('/', root(), [
     indexRoute(leaf({
         heading: 'Index construct'
     }))
-    , route('simple', leaf({
+    , route('simple', debugLifeCycle(leaf({
         heading: 'Simple construct'
-    }))
+    })))
     , route('param/:param', leaf({
         heading: 'Route with a param, shown in Component'
     }))
@@ -79,7 +79,7 @@ const routes = route('/', root(), [
         , route('leaf', leaf({
             heading: 'Nested simple construct'
         }))
-        , route('branch', branch()
+        , route('branch', debugLifeCycle(branch())
             // To dynamically load a component
             // IMPORTANT: does not work as intended with the setup in examples.webpack.js
             // require.ensure([], require => require('./components/branch').default({heading: "Nested dynamically imported"}), 'branch')

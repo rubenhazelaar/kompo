@@ -17,6 +17,8 @@ import construct, {
     ,getProps
     ,constructClass
     ,debug
+    ,debugLifeCycle
+    ,getSelector
 } from './component/component';
 import link from './router/link';
 import constructRouter, {
@@ -80,6 +82,8 @@ export default {
     ,getProps
     ,constructClass
     ,debug
+    ,debugLifeCycle
+    ,getSelector
 };
 
 export {

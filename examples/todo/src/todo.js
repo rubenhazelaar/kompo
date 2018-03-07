@@ -1,5 +1,5 @@
 // Component and content creation classes and functions
-import construct, {mount, debug} from '../../../src/component/component';
+import construct, {mount, debugLifeCycle} from '../../../src/component/component';
 import app from '../../../src/state/app';
 import dispatch from '../../../src/state/dispatch';
 
@@ -26,6 +26,8 @@ const root = construct('div', function({}) {
                 });
             }
         });
+    
+    debugLifeCycle(tl); // Tracks life cycle of this component
 
     mount(this, tl);
     mount(this, ta);

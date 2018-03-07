@@ -49,14 +49,20 @@ export function constructClass(tag:string, constructClass:any, defaultProps:prop
 export function render(Element:KompoElement):void {
     const kompo = Element.kompo;
     if (kompo.initial) {
-        console.groupCollapsed('RENDER: ');
-        console.log(Element);
-        console.log(kompo);
+        if(KOMPO_DEBUG && kompo.debug) {
+            console.groupCollapsed('RENDER: ');
+            console.log(Element);
+            console.log(kompo);
+            console.groupCollapsed('CONSTRUCT: ');
+        }
+
         // Construct then ...
-        console.groupCollapsed('CONSTRUCT: ');
         Element.construct(kompo.props);
         kompo.initial = false;
-        console.groupEnd();
+
+        if(KOMPO_DEBUG && kompo.debug) {
+            console.groupEnd();
+        }
 
         // ... react
         const statefulls = kompo.statefulls,
@@ -64,14 +70,23 @@ export function render(Element:KompoElement):void {
             state = selector ? selector(Element.__kompo__.state) : Element.__kompo__.state;
         
         if (statefulls.length > 0 && state) {
-            console.log('HAS STATE: ', state);
-            console.groupCollapsed('REACTS: ');
+            if(KOMPO_DEBUG && kompo.debug) {
+                console.log('HAS STATE: ', state);
+                console.groupCollapsed('REACTS: ');
+            }
+
             for (let i = 0, l = statefulls.length; i < l; ++i) {
                 statefulls[i](state, Element);
             }
+
+            if(KOMPO_DEBUG && kompo.debug) {
+                console.groupEnd();
+            }
+        }
+
+        if(KOMPO_DEBUG && kompo.debug) {
             console.groupEnd();
         }
-        console.groupEnd();
     } else {
         update(Element)
     }
@@ -82,16 +97,20 @@ export function update(Element:KompoElement):void {
         statefulls = kompo.statefulls,
         isRoot = Element === Element.__kompo__.root;
 
-    console.groupCollapsed('UPDATE: ');
-    console.log(Element);
-    console.log(kompo);
+    if(KOMPO_DEBUG && kompo.debug) {
+        console.groupCollapsed('UPDATE: ');
+        console.log(Element);
+        console.log(kompo);
+    }
 
     // Only run if a component has statefulls
     if (statefulls.length > 0) {
         const selector = kompo.selector,
             state = selector ? selector(Element.__kompo__.state) : Element.__kompo__.state;
 
-        console.log('HAS STATE: ', state);
+        if(KOMPO_DEBUG && kompo.debug) {
+            console.log('HAS STATE: ', state);
+        }
 
         // State is false, do not run statefulls
         if (state) {
@@ -105,30 +124,43 @@ export function update(Element:KompoElement):void {
                 && state.hasOwnProperty('__kompo_dirty__')
                 && state.__kompo_dirty__.length === 0
             )) {
-                console.log('_STATE_IS_DIRTY_');
-                console.groupCollapsed('REACTS: ');
+                if(KOMPO_DEBUG && kompo.debug) {
+                    console.log('_STATE_IS_DIRTY_');
+                    console.groupCollapsed('REACTS: ');
+                }
+
                 for (let i = 0, l = statefulls.length; i < l; ++i) {
                     statefulls[i](state, Element);
                 }
-                console.groupEnd();
+
+                if(KOMPO_DEBUG && kompo.debug) {
+                    console.groupEnd();
+                }
             }
         }
     }
 
     const mounts = kompo.mounts;
     if(mounts.length > 0) {
-        console.groupCollapsed('MOUNTS: ');
+        if(KOMPO_DEBUG && kompo.debug) {
+            console.groupCollapsed('MOUNTS: ');
+        }
+
         for (let i = 0, l = mounts.length; i < l; ++i) {
             render(mounts[i]);
         }
+
+        if(KOMPO_DEBUG && kompo.debug) {
+            console.groupEnd();
+        }
+    }
+
+    if(KOMPO_DEBUG && kompo.debug) {
         console.groupEnd();
     }
 
-    console.groupEnd();
-
     if (isRoot) {
         markClean(Element.__kompo__.state);
-        console.log('___END_OF_UPDATE_LOOP___');
     }
 }
 
@@ -143,7 +175,8 @@ export function kompo(Element:Element):KompoElement {
         routed: undefined,
         selector: undefined,
         // state: undefined, // TODO Unavailable now but could perhaps be used as caching mechanism (also see setState())
-        unmount: undefined
+        unmount: undefined,
+        debug: false
     };
 
     return Element;
@@ -357,4 +390,25 @@ export function debug(Element:KompoElement, level:?Number) {
 
         console.groupEnd();
     }
+
+    return Element;
+}
+
+export function debugLifeCycle(Element:KompoElement) {
+    if (!Element instanceof HTMLElement) {
+        throw new Error('Not an instance of Element');
+    }
+
+    if (!Element.hasOwnProperty('kompo')) {
+        throw new Error('Is not a KompoElement');
+    }
+
+    // Set to true so render & update functions log the components life cycle
+    Element.kompo.debug = true;
+
+    return Element;
+}
+
+export function getSelector(Element:KompoElement):selector {
+    return Element.kompo.selector;
 }

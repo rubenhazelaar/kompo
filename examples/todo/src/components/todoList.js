@@ -1,4 +1,4 @@
-import construct, {react, mount, unmount, unmountAll, mountIndex} from '../../../../src/component/component';
+import construct, {react, mount, unmount, unmountAll, mountIndex, debugLifeCycle} from '../../../../src/component/component';
 import dispatch from '../../../../src/state/dispatch';
 
 import todo from './todo';
@@ -37,9 +37,7 @@ export default construct('ul', function ({defaultClass, deleteClass, todoCompone
 
     react(this, todos => {
         // First unmount and remove all previous todos...
-        console.log(this.kompo.mounts);
         unmountAll(this);
-        console.log(this.kompo.mounts);
         empty(this);
 
         // .. and then insert the changed array of todos ...
@@ -48,6 +46,8 @@ export default construct('ul', function ({defaultClass, deleteClass, todoCompone
             const t = todoComponent({
                 deleteClass
             });
+
+            debugLifeCycle(t); // Track each of the todos
 
             // ... and then mount to the list
             mount(this, t, todos => todos[i]);

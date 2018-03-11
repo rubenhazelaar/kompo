@@ -30,6 +30,8 @@ import app from './state/app';
 import dispatch from './state/dispatch';
 import observe, {
     inheritObserved
+    ,ignore
+    ,deproxy
     ,markClean
     ,markDirty
 } from './state/observe';
@@ -50,6 +52,8 @@ const state = {
     app
     ,dispatch
     ,observe
+    ,ignore
+    ,deproxy
     ,inheritObserved
     ,markClean
     ,markDirty

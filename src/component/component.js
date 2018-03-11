@@ -7,12 +7,14 @@ import {markClean} from '../state/observe';
 /**
  * Adds construct function to Element prototype
  */
-Object.defineProperty(Element.prototype, 'construct', {
-    writable: true,
-    value: function () {
-        throw new Error('Must override the construct method');
-    }
-});
+if (typeof Element === 'object') {
+    Object.defineProperty(Element.prototype, 'construct', {
+        writable: true,
+        value: function () {
+            throw new Error('Must override the construct method');
+        }
+    });
+}
 
 /**
  * Creates a compnent from an Element

@@ -5,6 +5,18 @@ import isObject from '../util/isObject';
 import {markClean} from '../state/observe';
 
 /**
+ * When KOMPO_DEBUG is defined it returns it, otherwise is returns false
+ * @returns boolean
+ */
+function isKompoDebug():bool {
+    if(typeof KOMPO_DEBUG != 'undefined') {
+        return KOMPO_DEBUG
+    }
+
+    return false;
+}
+
+/**
  * Adds construct function to Element prototype
  */
 if (typeof Element === 'object') {
@@ -51,7 +63,7 @@ export function constructClass(tag:string, constructClass:any, defaultProps:prop
 export function render(Element:KompoElement):void {
     const kompo = Element.kompo;
     if (kompo.initial) {
-        if(KOMPO_DEBUG && kompo.debug) {
+        if(isKompoDebug() && kompo.debug) {
             console.groupCollapsed('RENDER: ');
             console.log(Element);
             console.log(kompo);
@@ -62,7 +74,7 @@ export function render(Element:KompoElement):void {
         Element.construct(kompo.props);
         kompo.initial = false;
 
-        if(KOMPO_DEBUG && kompo.debug) {
+        if(isKompoDebug() && kompo.debug) {
             console.groupEnd();
         }
 
@@ -72,7 +84,7 @@ export function render(Element:KompoElement):void {
             state = selector ? selector(Element.__kompo__.state) : Element.__kompo__.state;
         
         if (statefulls.length > 0 && state) {
-            if(KOMPO_DEBUG && kompo.debug) {
+            if(isKompoDebug() && kompo.debug) {
                 console.log('HAS STATE: ', state);
                 console.groupCollapsed('REACTS: ');
             }
@@ -81,12 +93,12 @@ export function render(Element:KompoElement):void {
                 statefulls[i](state, Element);
             }
 
-            if(KOMPO_DEBUG && kompo.debug) {
+            if(isKompoDebug() && kompo.debug) {
                 console.groupEnd();
             }
         }
 
-        if(KOMPO_DEBUG && kompo.debug) {
+        if(isKompoDebug() && kompo.debug) {
             console.groupEnd();
         }
     } else {
@@ -99,7 +111,7 @@ export function update(Element:KompoElement):void {
         statefulls = kompo.statefulls,
         isRoot = Element === Element.__kompo__.root;
 
-    if(KOMPO_DEBUG && kompo.debug) {
+    if(isKompoDebug() && kompo.debug) {
         console.groupCollapsed('UPDATE: ');
         console.log(Element);
         console.log(kompo);
@@ -110,7 +122,7 @@ export function update(Element:KompoElement):void {
         const selector = kompo.selector,
             state = selector ? selector(Element.__kompo__.state) : Element.__kompo__.state;
 
-        if(KOMPO_DEBUG && kompo.debug) {
+        if(isKompoDebug() && kompo.debug) {
             console.log('HAS STATE: ', state);
         }
 
@@ -126,7 +138,7 @@ export function update(Element:KompoElement):void {
                 && state.hasOwnProperty('__kompo_dirty__')
                 && state.__kompo_dirty__.length === 0
             )) {
-                if(KOMPO_DEBUG && kompo.debug) {
+                if(isKompoDebug() && kompo.debug) {
                     console.log('_STATE_IS_DIRTY_');
                     console.groupCollapsed('REACTS: ');
                 }
@@ -135,7 +147,7 @@ export function update(Element:KompoElement):void {
                     statefulls[i](state, Element);
                 }
 
-                if(KOMPO_DEBUG && kompo.debug) {
+                if(isKompoDebug() && kompo.debug) {
                     console.groupEnd();
                 }
             }
@@ -144,7 +156,7 @@ export function update(Element:KompoElement):void {
 
     const mounts = kompo.mounts;
     if(mounts.length > 0) {
-        if(KOMPO_DEBUG && kompo.debug) {
+        if(isKompoDebug() && kompo.debug) {
             console.groupCollapsed('MOUNTS: ');
         }
 
@@ -152,12 +164,12 @@ export function update(Element:KompoElement):void {
             render(mounts[i]);
         }
 
-        if(KOMPO_DEBUG && kompo.debug) {
+        if(isKompoDebug() && kompo.debug) {
             console.groupEnd();
         }
     }
 
-    if(KOMPO_DEBUG && kompo.debug) {
+    if(isKompoDebug() && kompo.debug) {
         console.groupEnd();
     }
 

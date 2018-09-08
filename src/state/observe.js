@@ -159,8 +159,6 @@ export function inheritObserved(obj:any, ignored: Array<any> = []): any {
 
         if(ignored.indexOf(key) !== -1) continue;
 
-        if(typeof value === 'undefined') return;
-
         if(
             value
             && value.hasOwnProperty('__kompo_dirty__')

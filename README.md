@@ -227,6 +227,7 @@ WIP
 
 ## Todo
 
+- Generic isolatedReact
 - Provide more structure to component lifecycle
     - Smart selectors which make it easier to pair them with the component using it
         - Selector with function signature which defines all data it needs

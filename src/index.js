@@ -19,7 +19,6 @@ import construct, {
     ,debug
     ,debugLifeCycle
     ,getSelector
-    ,unsubscribe
 } from './component/component';
 import link from './router/link';
 import constructRouter, {
@@ -33,9 +32,7 @@ import observe, {
     ,ignore
     ,shouldIgnore
     ,resetIgnore
-    ,STATE_CHANGE_EVENT
 } from './state/store';
-import pubsub from './state/pubsub';
 import hasProxy from './util/hasProxy';
 import deproxy from './util/deproxy';
 import isObject from './util/isObject';
@@ -57,8 +54,6 @@ const state = {
     ,ignore
     ,shouldIgnore
     ,resetIgnore
-    ,STATE_CHANGE_EVENT
-    ,pubsub
 };
 
 const util = {
@@ -91,7 +86,6 @@ export default {
     ,debug
     ,debugLifeCycle
     ,getSelector
-    ,unsubscribe
 };
 
 export {

@@ -1,10 +1,9 @@
 // @flow
-import merge from '../util/merge';
-import {render} from '../component/component';
+import {mount, unmount, render, unsubscribe} from '../component/component';
 import isFunction from '../util/isFunction';
 
 export default function construct(props:props):router {
-    props = merge({
+    props = Object.assign({
         base: '/',
         url: '/',
         notFoundCallback: function (url) {
@@ -58,7 +57,7 @@ export default function construct(props:props):router {
         }
     }
 
-    function buildPath(route, ancestors = [], hierarchy = [],level = 0) {
+    function buildPath(route, ancestors = [], hierarchy = [], level = 0) {
         const children = route.children;
         const routeComponent = route.component;
 
@@ -80,7 +79,7 @@ export default function construct(props:props):router {
                     ancestors.concat(childRoute.component) :
                     ancestors.concat(routeComponent, childRoute.component),
                 childHierarchy = hierarchy.concat(i);
-            
+
             let path;
 
             if (childRoute.path[0] === '/') {
@@ -127,10 +126,10 @@ export default function construct(props:props):router {
 
     function scanSiblingsRoutes(hierarchy, parentRoute, toIndex, currentIndex) {
         hierarchy = hierarchy.slice(); // Slice in order to prevent editing original array
-        if (currentIndex  === toIndex) {
+        if (currentIndex === toIndex) {
             return parentRoute.children
         }
-        
+
         return scanSiblingsRoutes(hierarchy, parentRoute.children[hierarchy.shift()], toIndex, currentIndex + 1)
     }
 
@@ -138,8 +137,8 @@ export default function construct(props:props):router {
         getParams: () => params,
         isUrl,
         getUrl: () => url,
-        setTo: (u: string) => {
-            u = u.replace(base,'');
+        setTo: (u:string) => {
+            u = u.replace(base, '');
             if (isUrl(u)) return false;
 
             setUrl(u);
@@ -172,11 +171,11 @@ export default function construct(props:props):router {
                 if (depth < 0) return mc.slice(index + depth, index + 1);
                 return mc.slice(index, index + depth);
             } else {
-                return includeSiblings?
+                return includeSiblings ?
                 {
                     component: mc[index],
                     siblings: getSiblingRoutes(md.hierarchy, index)
-                }: mc[index];
+                } : mc[index];
             }
         }
     }
@@ -204,14 +203,14 @@ export function swap(component:KompoElement, router:router, element:Element):voi
         if (c instanceof Element) {
             _swap(component, c, element)
         } else if (c instanceof Promise) {
-            if(c.kompo.resolved) {
+            if (c.kompo.resolved) {
                 _swap(component, c.kompo.resolved, element);
             } else {
                 c.then((rc) => {
                     rc.kompo.level = c.kompo.level;
-                    _swap(component, rc, element, true);
+                    _swap(component, rc, element);
                     c.kompo.resolved = rc;
-                    if(fn) fn.kompo.resolved = rc;
+                    if (fn) fn.kompo.resolved = rc;
                 }).catch(() => {
                     console.error("Cannot dynamically load module for route")
                 });
@@ -220,7 +219,7 @@ export function swap(component:KompoElement, router:router, element:Element):voi
     }
 }
 
-function _toPromise(fn: () => Promise): Promise {
+function _toPromise(fn:() => Promise):Promise {
     const pr = fn();
 
     // Transfer kompo object including level to the promise
@@ -229,24 +228,19 @@ function _toPromise(fn: () => Promise): Promise {
     return pr
 }
 
-function _swap(parent:KompoElement, routedComponent:KompoElement, element:Element, renderWithRouted:bool = false):void {
+function _swap(parent:KompoElement, routedComponent:KompoElement, element:Element):void {
     const routed = parent.kompo.routed,
         el = element ? element : parent;
 
     if (routed === routedComponent) return;
 
     if (routed) {
-        if (renderWithRouted) render(routedComponent);
         el.replaceChild(routedComponent, routed);
-        parent.kompo.mounts.splice(parent.kompo.mounts.indexOf(routed, 1));
+        unmount(routed);
     } else {
-        render(routedComponent);
         el.appendChild(routedComponent);
     }
 
-    if (parent.kompo.mounts.indexOf(routedComponent) == -1) {
-        parent.kompo.mounts.push(routedComponent);
-    }
-
+    mount(parent, routedComponent);
     parent.kompo.routed = routedComponent;
 }

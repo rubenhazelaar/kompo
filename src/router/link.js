@@ -1,5 +1,4 @@
-import construct, {react, getRouter, hasSlot, slot, mount} from '../component/component';
-import dispatch from '../state/dispatch';
+import construct, {react, getRouter, hasSlot, slot, mount, getState} from '../component/component';
 
 export default construct('a', function ({
     url, child, classNames, data, title, defaultEvent, activeClass, onClick
@@ -40,11 +39,9 @@ export default construct('a', function ({
             onClick(e);
         }
         router.goTo(url, title, data);
-        dispatch(this, (state) => {
-            state.url = url;
-        });
+        const state = getState(this);
+        state.url = url;
     });
-
 }, {
     url: '',
     child: '',

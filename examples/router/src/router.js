@@ -1,6 +1,5 @@
 // Component and content creation classes and functions
-import construct, {react, getRouter, debugLifeCycle} from '../../../src/component/component';
-import dispatch from '../../../src/state/dispatch';
+import construct, {react, getRouter, debugLifeCycle, getState} from '../../../src/component/component';
 import app from '../../../src/state/app';
 
 // Router classes and components
@@ -35,9 +34,8 @@ const root = construct('div', function () {
             r.goTo(links[i]);
 
             // Dispatch change to state
-            dispatch(this, state => {
-                state.url = links[i];
-            });
+            const state = getState(this);
+            state.url = links[i];
         });
         a.setAttribute('href', 'javascript:void(0);');
         a.textContent = links[i];
@@ -50,7 +48,7 @@ const root = construct('div', function () {
     // On update swap the new 
     // routed construct
     react(this, () => {
-        console.log("SWAP ONE");
+        // console.log("SWAP ONE --------------------------------------");
         swap(this, r);
     });
 });
@@ -61,9 +59,9 @@ const routes = route('/', root(), [
     indexRoute(leaf({
         heading: 'Index construct'
     }))
-    , route('simple', debugLifeCycle(leaf({
+    , route('simple', leaf({
         heading: 'Simple construct'
-    })))
+    }))
     , route('param/:param', leaf({
         heading: 'Route with a param, shown in Component'
     }))
@@ -79,7 +77,7 @@ const routes = route('/', root(), [
         , route('leaf', leaf({
             heading: 'Nested simple construct'
         }))
-        , route('branch', debugLifeCycle(branch())
+        , route('branch', branch()
             // To dynamically load a component
             // IMPORTANT: does not work as intended with the setup in examples.webpack.js
             // require.ensure([], require => require('./components/branch').default({heading: "Nested dynamically imported"}), 'branch')
@@ -128,8 +126,7 @@ app(ro, state, r).start();
 window.addEventListener('popstate', ()=>{
     // Just update the whole tree from the root up.
     if (r.setTo(window.location.pathname)) {
-        dispatch(ro, state => {
-            state.url = r.getUrl();
-        });    
+        const state = getState(ro);
+        state.url = r.getUrl();
     }
 });

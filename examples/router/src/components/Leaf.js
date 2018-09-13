@@ -17,6 +17,7 @@ export default construct('div', function ({heading, paramIndex}) {
 
     // Show parameter if it is set
     react(this, () => {
+        // console.log('REACT LEAF', heading);
         const params = r.getParams();
         if (params.length > 0) {
             span.textContent = 'Param at index ' + paramIndex + ' = ' + params[paramIndex];

@@ -1,5 +1,4 @@
-import construct, {react} from '../../../src/component/component';
-import dispatch from '../../../src/state/dispatch';
+import construct, {react, getState} from '../../../src/component/component';
 import app from '../../../src/state/app';
 
 // Create a component from a div element
@@ -12,9 +11,8 @@ const hello = construct('div', function({name}) {
     // the dispatch function dispatches
     // changes to the state
     input.addEventListener('keyup', () => {
-        dispatch(this, state => {
-            state.name = input.value;
-        });
+       const state = getState(this);
+        state.name = input.value;
     });
 
     // React to a state change (triggered by dispatch())

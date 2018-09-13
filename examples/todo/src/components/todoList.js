@@ -1,5 +1,4 @@
-import construct, {react, mount, unmount, unmountAll, mountIndex, debugLifeCycle} from '../../../../src/component/component';
-import dispatch from '../../../../src/state/dispatch';
+import construct, {react, getState, mount, unmount, unmountAll, mountIndex, debugLifeCycle} from '../../../../src/component/component';
 
 import todo from './todo';
 
@@ -28,10 +27,9 @@ export default construct('ul', function ({defaultClass, deleteClass, todoCompone
         if(e.target.classList.contains(deleteClass)) {
             // use ul here to make sure the 
             // dispatch callback returns the right state
-            dispatch(ul, todos => {
-                todos.splice(mountIndex(ul, this), 1);
-            });
-            unmount(this);
+            const todos = getState(ul);
+            todos.splice(mountIndex(ul, this), 1);
+            // unmount(this);
         }
     });
 
@@ -39,6 +37,7 @@ export default construct('ul', function ({defaultClass, deleteClass, todoCompone
         // First unmount and remove all previous todos...
         unmountAll(this);
         empty(this);
+        console.log('RESET', todos);
 
         // .. and then insert the changed array of todos ...
         const frag = document.createDocumentFragment();
@@ -47,7 +46,7 @@ export default construct('ul', function ({defaultClass, deleteClass, todoCompone
                 deleteClass
             });
 
-            debugLifeCycle(t); // Track each of the todos
+            // debugLifeCycle(t); // Track each of the todos
 
             // ... and then mount to the list
             mount(this, t, todos => todos[i]);

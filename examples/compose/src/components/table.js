@@ -1,4 +1,4 @@
-import construct, {react, append} from '../../../../src/component/component';
+import construct, {react, render} from '../../../../src/component/component';
 
 import tableRow from './tableRow';
 
@@ -35,7 +35,9 @@ export default construct('table', function({appendRow, columnFilter, on}) {
     this.appendChild(body);
 }, {
     appendRow(table, parent, data) {
-        append(parent, tableRow(data));
+        const tr = tableRow(data);
+        parent.appendChild(tr);
+        render(tr);
     },
     columnFilter(data) {
         // Do nothing

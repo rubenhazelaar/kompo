@@ -1,4 +1,4 @@
-import {constructClass, react, append} from '../../../../src/component/component';
+import {constructClass, react, render} from '../../../../src/component/component';
 
 import TableRow from './TableRow';
 
@@ -37,7 +37,9 @@ export class Table {
     }
 
     appendRow(parent, data) {
-        append(parent, TableRow(data));
+        const tr = TableRow(data);
+        parent.appendChild(tr);
+        render(tr)
     }
 
     on() {

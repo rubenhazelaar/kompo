@@ -1,5 +1,4 @@
-import {append, getProps, constructClass} from '../../../../src/component/component';
-import merge from '../../../../src/util/merge';
+import {render, getProps, constructClass} from '../../../../src/component/component';
 
 import {Table} from './Table';
 import TableRow from './TableRow';
@@ -7,13 +6,15 @@ import AccordionTableRow from './AccordionTableRow';
 
 export class AccordionTable extends Table {
     appendRow(parent, props) {
-        const tableProps = getProps(this);
+        const tableProps = getProps(this),
+            tr = TableRow(props);
         props.defaultClass = tableProps.rowClass;
-        append(parent, TableRow(props));
+        parent.appendChild(tr);
+        render(tr);
         if(typeof props.index !== 'undefined') {
-            append(parent, AccordionTableRow(
-                merge(props, tableProps)
-            ));
+            const atr = AccordionTableRow(Object.assign(props, tableProps));
+            parent.appendChild(atr);
+            render(atr)
         }
 
     }

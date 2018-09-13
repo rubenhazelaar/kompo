@@ -17,7 +17,8 @@ var config = {
         'examples/router/dist/router-bundle': './examples/router/src/router.js',
         'examples/todo/dist/todo-bundle': './examples/todo/src/todo.js',
         'examples/compose/dist/compose-bundle': './examples/compose/src/compose.js',
-        'examples/classbased/dist/classbased-bundle': './examples/classbased/src/classbased.js'
+        'examples/classbased/dist/classbased-bundle': './examples/classbased/src/classbased.js',
+        'examples/store/dist/store-bundle': './examples/store/src/store.js',
     },
     output: {
         path: './',

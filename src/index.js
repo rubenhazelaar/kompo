@@ -19,6 +19,7 @@ import construct, {
     ,debug
     ,debugLifeCycle
     ,getSelector
+    ,unsubscribe
 } from './component/component';
 import link from './router/link';
 import constructRouter, {
@@ -27,15 +28,16 @@ import constructRouter, {
     ,swap
 } from './router/router';
 import app from './state/app';
-import dispatch from './state/dispatch';
 import observe, {
-    inheritObserved
+    isProxy
     ,ignore
-    ,deproxy
-    ,markClean
-    ,markDirty
-} from './state/observe';
+    ,shouldIgnore
+    ,resetIgnore
+    ,STATE_CHANGE_EVENT
+} from './state/store';
+import pubsub from './state/pubsub';
 import hasProxy from './util/hasProxy';
+import deproxy from './util/deproxy';
 import isObject from './util/isObject';
 import merge from './util/merge';
 import isFunction from './util/isFunction';
@@ -50,17 +52,18 @@ const router = {
 
 const state = {
     app
-    ,dispatch
     ,observe
+    ,isProxy
     ,ignore
-    ,deproxy
-    ,inheritObserved
-    ,markClean
-    ,markDirty
+    ,shouldIgnore
+    ,resetIgnore
+    ,STATE_CHANGE_EVENT
+    ,pubsub
 };
 
 const util = {
     hasProxy
+    ,deproxy
     ,isObject
     ,merge
     ,isFunction
@@ -88,6 +91,7 @@ export default {
     ,debug
     ,debugLifeCycle
     ,getSelector
+    ,unsubscribe
 };
 
 export {

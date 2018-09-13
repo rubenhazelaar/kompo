@@ -1,15 +1,12 @@
 // @flow
-import merge from '../util/merge';
-import hasProxy from '../util/hasProxy';
-import isObject from '../util/isObject';
-import {markClean} from '../state/observe';
+import {isProxy, shouldIgnore, resetIgnore} from '../state/store';
 
 /**
  * When KOMPO_DEBUG is defined it returns it, otherwise is returns false
  * @returns boolean
  */
 function isKompoDebug():bool {
-    if(typeof KOMPO_DEBUG != 'undefined') {
+    if (typeof KOMPO_DEBUG != 'undefined') {
         return KOMPO_DEBUG
     }
 
@@ -39,7 +36,7 @@ if (typeof Element === 'object') {
 export default function construct(tag:string, constructFn:constructFn, defaultProps:props = {}):constructComponent {
     return (props = {}) => {
         const c = kompo(document.createElement(tag));
-        c.kompo.props = merge({}, defaultProps, props);
+        c.kompo.props = Object.assign({}, defaultProps, props);
         c.construct = constructFn;
         return c;
     };
@@ -49,8 +46,8 @@ export function constructClass(tag:string, constructClass:any, defaultProps:prop
     const methods = getMethods(constructClass.prototype);
     return (props = {}) => {
         const c = kompo(document.createElement(tag));
-        c.kompo.props = merge({}, defaultProps, props);
-        merge(c, methods);
+        c.kompo.props = Object.assign({}, defaultProps, props);
+        Object.assign(c, methods);
         return c;
     };
 }
@@ -62,120 +59,122 @@ export function constructClass(tag:string, constructClass:any, defaultProps:prop
  */
 export function render(Element:KompoElement):void {
     const kompo = Element.kompo;
-    if (kompo.initial) {
-        if(isKompoDebug() && kompo.debug) {
-            console.groupCollapsed('RENDER: ');
-            console.log(Element);
-            console.log(kompo);
-            console.groupCollapsed('CONSTRUCT: ');
+    if (!kompo.initial) return;
+
+    if (isKompoDebug() && kompo.debug) {
+        console.groupCollapsed('RENDER: ');
+        console.log(Element);
+        console.log(kompo);
+        console.groupCollapsed('CONSTRUCT: ');
+    }
+
+    // Construct then ...
+    Element.construct(kompo.props);
+    kompo.initial = false;
+
+    if (isKompoDebug() && kompo.debug) {
+        console.groupEnd();
+    }
+
+    // ... react
+    const statefulls = kompo.statefulls,
+        selector = kompo.selector,
+        state = selector ? selector(Element.__kompo__.state) : Element.__kompo__.state;
+
+    if (statefulls.length > 0 && state) {
+        if (isKompoDebug() && kompo.debug) {
+            console.log('HAS STATE: ', state);
+            console.groupCollapsed('REACTS: ');
         }
 
-        // Construct then ...
-        Element.construct(kompo.props);
-        kompo.initial = false;
+        for (let i = 0, l = statefulls.length; i < l; ++i) {
+            statefulls[i](state, Element);
+        }
 
-        if(isKompoDebug() && kompo.debug) {
+        if (isKompoDebug() && kompo.debug) {
             console.groupEnd();
         }
+    }
 
-        // ... react
-        const statefulls = kompo.statefulls,
-            selector = kompo.selector,
-            state = selector ? selector(Element.__kompo__.state) : Element.__kompo__.state;
-        
-        if (statefulls.length > 0 && state) {
-            if(isKompoDebug() && kompo.debug) {
-                console.log('HAS STATE: ', state);
-                console.groupCollapsed('REACTS: ');
-            }
-
-            for (let i = 0, l = statefulls.length; i < l; ++i) {
-                statefulls[i](state, Element);
-            }
-
-            if(isKompoDebug() && kompo.debug) {
-                console.groupEnd();
-            }
-        }
-
-        if(isKompoDebug() && kompo.debug) {
-            console.groupEnd();
-        }
-    } else {
-        update(Element)
+    if (isKompoDebug() && kompo.debug) {
+        console.groupEnd();
     }
 }
 
-export function update(Element:KompoElement):void {
-    const kompo = Element.kompo,
-        statefulls = kompo.statefulls,
-        isRoot = Element === Element.__kompo__.root;
+export function update(Element:KompoElement, state:state):void {
+    const kompo = Element.kompo;
 
-    if(isKompoDebug() && kompo.debug) {
+    if (isKompoDebug() && kompo.debug) {
         console.groupCollapsed('UPDATE: ');
         console.log(Element);
         console.log(kompo);
     }
 
-    // Only run if a component has statefulls
-    if (statefulls.length > 0) {
-        const selector = kompo.selector,
-            state = selector ? selector(Element.__kompo__.state) : Element.__kompo__.state;
-
-        if(isKompoDebug() && kompo.debug) {
-            console.log('HAS STATE: ', state);
-        }
-
-        // State is false, do not run statefulls
-        if (state) {
-            // If is object and flagged dirty or not at all than do not update
-            const checkIfDirty = hasProxy?
-                isObject(state) || Array.isArray(state):
-                isObject(state) && !Array.isArray(state);
-    
-            if (!(
-                checkIfDirty
-                && state.hasOwnProperty('__kompo_dirty__')
-                && state.__kompo_dirty__.length === 0
-            )) {
-                if(isKompoDebug() && kompo.debug) {
-                    console.log('_STATE_IS_DIRTY_');
-                    console.groupCollapsed('REACTS: ');
-                }
-
-                for (let i = 0, l = statefulls.length; i < l; ++i) {
-                    statefulls[i](state, Element);
-                }
-
-                if(isKompoDebug() && kompo.debug) {
-                    console.groupEnd();
-                }
-            }
-        }
-    }
+    updateStatefulls(Element, kompo, state);
 
     const mounts = kompo.mounts;
-    if(mounts.length > 0) {
-        if(isKompoDebug() && kompo.debug) {
+    if (mounts.length > 0) {
+        if (isKompoDebug() && kompo.debug) {
             console.groupCollapsed('MOUNTS: ');
         }
 
         for (let i = 0, l = mounts.length; i < l; ++i) {
-            render(mounts[i]);
+            update(mounts[i], state);
         }
 
-        if(isKompoDebug() && kompo.debug) {
+        if (isKompoDebug() && kompo.debug) {
             console.groupEnd();
         }
     }
 
-    if(isKompoDebug() && kompo.debug) {
+    if (isKompoDebug() && kompo.debug) {
         console.groupEnd();
     }
+}
 
-    if (isRoot) {
-        markClean(Element.__kompo__.state);
+function updateStatefulls(Element:KompoElement, kompo:kompo, state:state) {
+    const statefulls = kompo.statefulls;
+
+    // Only run if a component has statefulls
+    if (statefulls.length == 0) return;
+
+    const selector = kompo.selector,
+        selectedState = selector ? selector(Element.__kompo__.state) : Element.__kompo__.state;
+
+    if (selectedState && (state === selectedState || inProperties(selectedState, state))) {
+        if (isKompoDebug() && kompo.debug) {
+            console.log('HAS DIRTY STATE: ', selectedState);
+            console.groupCollapsed('REACTS: ');
+        }
+
+        for (let i = 0, l = statefulls.length; i < l; ++i) {
+            const st = statefulls[i];
+
+            if (shouldIgnore(state, st)) {
+                resetIgnore(state);
+                continue;
+            }
+
+            st(selectedState, Element);
+        }
+
+        if (isKompoDebug() && kompo.debug) {
+            console.groupEnd();
+        }
     }
+}
+
+function inProperties(selectedState:state, state:state) {
+    if (selectedState && !isProxy(selectedState)) {
+        const keys = Object.keys(selectedState);
+        for (let i = 0, l = keys.length; i < l; ++i) {
+            if (state === selectedState[keys[i]]) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 export function kompo(Element:Element):KompoElement {
@@ -211,11 +210,9 @@ export function getState(Element:KompoElement):any {
         Element.__kompo__.state
 }
 
-export function mount(
-    parent:KompoElement,
-    child:KompoElement|Array<KompoElement>|Mountable|Array<Mountable>,
-    selector:?selector
-):void {
+export function mount(parent:KompoElement,
+                      child:KompoElement|Array<KompoElement>|Mountable|Array<Mountable>,
+                      selector:?selector):void {
     if (Array.isArray(child)) {
         _mountAll(parent, child, selector);
     } else {
@@ -236,8 +233,8 @@ function _mount(parent:KompoElement, child:KompoElement|Mountable, selector:?sel
     // Protection if same element is appended multiple times
     const mounts = parent.kompo.mounts;
     if (mounts.indexOf(child) === -1) {
-        child.kompo.unmount = Element => {
-            mounts.splice(mounts.indexOf(Element), 1);
+        child.kompo.unmount = () => {
+            mounts.splice(mounts.indexOf(child), 1);
         };
         mounts.push(child);
     }
@@ -246,15 +243,12 @@ function _mount(parent:KompoElement, child:KompoElement|Mountable, selector:?sel
 function _mountAll(parent:KompoElement, children:Array<KompoElement>|Array<Mountable>, selector:?selector):void {
     // Mount all children ...
     for (let i = 0, l = children.length; i < l; ++i) {
-        _mount(parent, children[i], selector? selector: undefined);
+        _mount(parent, children[i], selector ? selector : undefined);
     }
 }
 
 export function unmount(Element:KompoElement):void {
-    const unm = Element.kompo.unmount;
-    if (unm) {
-        unm(Element);
-    }
+    Element.kompo.unmount();
 }
 
 export function unmountAll(Element:KompoElement):void {
@@ -321,7 +315,7 @@ export function getRouter(Element:KompoElement):router {
  */
 export function compose(constructComponent:constructComponent, composeProps:props):constructComponent {
     return (props = {}) => {
-        return constructComponent(merge(composeProps, props));
+        return constructComponent(Object.assign(composeProps, props));
     };
 }
 
@@ -368,7 +362,7 @@ export function getMounts(Element:KompoElement):mounts {
 class Mountable {
     Element:KompoElement;
     selector:selector;
-    
+
     constructor(Element:KompoElement, selector:selector) {
         this.Element = Element;
         this.selector = selector;
@@ -383,21 +377,21 @@ export function debug(Element:KompoElement, level:?Number) {
     if (!Element instanceof HTMLElement) {
         throw new Error('Not an instance of Element');
     }
-    
+
     if (!Element.hasOwnProperty('kompo')) {
         throw new Error('Is not a KompoElement');
     }
 
     const kompo = Element.kompo,
         mounts = kompo.mounts;
-    
+
     console.log(Element, kompo);
 
-    if(Number.isInteger(level) && level > 0 && mounts.length > 0) {
+    if (Number.isInteger(level) && level > 0 && mounts.length > 0) {
         console.groupCollapsed('MOUNTS: ');
 
         const nl = --level;
-        for(let i = 0, l = mounts.length; i < l; ++i) {
+        for (let i = 0, l = mounts.length; i < l; ++i) {
             debug(mounts[i], nl);
             console.log('__END_OF_MOUNT__');
         }

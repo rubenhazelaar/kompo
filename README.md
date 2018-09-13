@@ -226,6 +226,8 @@ WIP
 - Version 1.3.0: Change to rendering from bottom-up to top-down. Can break components considerably 
 
 ## Todo
+- Remove and (re)add listeners of 'stateChange' on unmount and remount
+
 
 - Generic isolatedReact
 - Provide more structure to component lifecycle

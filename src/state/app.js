@@ -1,16 +1,16 @@
 // @flow
-import observe from './observe';
+import observe from './store';
 import {render, setState} from '../component/component'
 
 export default function app(root:KompoElement, state:any, router:?router):{start:() => KompoElement} {
-    state = observe(state);
+    state = observe(state, root);
 
     // Make available for all Elements
     Object.defineProperty(Element.prototype, '__kompo__', {
         value: {
-            root: root,
-            state: state,
-            router: router
+            root,
+            state,
+            router
         }
     });
 
@@ -19,7 +19,7 @@ export default function app(root:KompoElement, state:any, router:?router):{start
             if(selector) {
                 setState(root, selector);
             }
-            requestAnimationFrame(() => {render(root)});
+            requestAnimationFrame(() => render(root));
             return root
         }
     };

@@ -13,6 +13,7 @@ export default construct('div', function ({heading}) {
 
     const r = getRouter(this);
     react(this, () => {
+        // console.log('REACT BRANCH', heading);
         swap(this, r);
     });
 }, {

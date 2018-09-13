@@ -1,5 +1,4 @@
-import construct, {react} from '../../../../src/component/component';
-import dispatch from  '../../../../src/state/dispatch';
+import construct, {react, getState} from '../../../../src/component/component';
 
 export default construct('li', function ({defaultClass, deleteClass}) {
     const todo = document.createElement('a'),
@@ -11,9 +10,8 @@ export default construct('li', function ({defaultClass, deleteClass}) {
     
     todo.addEventListener('click', e => {
         e.preventDefault();
-        dispatch(this, state => {
-            state.done = !state.done;
-        });
+        const state = getState(this);
+        state.done = !state.done;
     });
 
     del.addEventListener('click', e => {
@@ -22,6 +20,7 @@ export default construct('li', function ({defaultClass, deleteClass}) {
     });
 
     react(this, state => {
+        console.log('REACT');
         todo.textContent = state.description;
         if (state.done) {
             this.classList.add('Todo--isCompleted');

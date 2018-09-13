@@ -1,7 +1,6 @@
 // Component and content creation classes and functions
-import construct, {mount, debugLifeCycle} from '../../../src/component/component';
+import construct, {mount, getState, debugLifeCycle} from '../../../src/component/component';
 import app from '../../../src/state/app';
-import dispatch from '../../../src/state/dispatch';
 
 // Example components with self-explanatory name
 import todoList from './components/todoList';
@@ -18,16 +17,15 @@ const root = construct('div', function({}) {
         ta = add({
             defaultClass: 'TodoAdd',
             addCallback: value => {
-                dispatch(this, state => {
-                    state.push({
-                        description: value,
-                        done: false
-                    });
+                const state = getState(this);
+                state.push({
+                    description: value,
+                    done: false
                 });
             }
         });
     
-    debugLifeCycle(tl); // Tracks life cycle of this component
+    // debugLifeCycle(tl); // Tracks life cycle of this component
 
     mount(this, tl);
     mount(this, ta);

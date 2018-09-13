@@ -1,5 +1,4 @@
-import {append, compose, getProps} from '../../../../src/component/component';
-import merge from '../../../../src/util/merge';
+import {render, compose, getProps} from '../../../../src/component/component';
 
 import table from './table';
 import tableRow from './tableRow';
@@ -8,13 +7,15 @@ import accordionTableRow from './accordionTableRow';
 export default compose(table, {
     rowSlot(c, filtered, raw) {},
     appendRow(table, parent, props) {
-        const tableProps = getProps(table);
+        const tableProps = getProps(table),
+            tr = tableRow(props);
         props.defaultClass = tableProps.rowClass;
-        append(parent, tableRow(props));
+        parent.appendChild(tr);
+        render(tr);
         if(typeof props.index !== 'undefined') {
-            append(parent, accordionTableRow(
-                merge(props, tableProps)
-            ));
+            const atr = accordionTableRow(Object.assign(props, tableProps));
+            parent.appendChild(atr);
+            render(atr)
         }
 
     },

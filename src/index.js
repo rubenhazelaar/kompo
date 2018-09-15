@@ -32,6 +32,10 @@ import observe, {
     ,ignore
     ,shouldIgnore
     ,resetIgnore
+    ,dispatch
+    ,ignoreUpdate
+    ,resetIgnoreUpdate
+    ,triggerUpdate
 } from './state/store';
 import hasProxy from './util/hasProxy';
 import deproxy from './util/deproxy';
@@ -54,6 +58,10 @@ const state = {
     ,ignore
     ,shouldIgnore
     ,resetIgnore
+    ,dispatch
+    ,ignoreUpdate
+    ,resetIgnoreUpdate
+    ,triggerUpdate
 };
 
 const util = {

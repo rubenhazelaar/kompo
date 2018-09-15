@@ -1,9 +1,11 @@
-import {update} from '../component/component';
+import {update, getState} from '../component/component';
 import isObject from '../util/isObject';
 
 const OBSERVED_KEY = '__kompo_observed__',
+    IGNORE_STATEFULL_KEY = '__kompo_ignore_statefulls__',
     IGNORE_KEY = '__kompo_ignore__',
-    reservedKeys = ['length', IGNORE_KEY];
+    TRIGGER_UPDATE_KEY = '__kompo_trigger_update__', // IMPORTANT Should not be in reserved keys
+    reservedKeys = ['length', IGNORE_STATEFULL_KEY, IGNORE_KEY];
 
 export default function observe(obj:any, root:KompoElement) {
     const isObj = isObject(obj),
@@ -15,8 +17,18 @@ export default function observe(obj:any, root:KompoElement) {
         value: true
     });
 
-    Object.defineProperty(obj, IGNORE_KEY, {
+    Object.defineProperty(obj, IGNORE_STATEFULL_KEY, {
         value: [],
+        writable: true
+    });
+
+    Object.defineProperty(obj, IGNORE_KEY, {
+        value: false,
+        writable: true
+    });
+
+    Object.defineProperty(obj, TRIGGER_UPDATE_KEY, {
+        value: true,
         writable: true
     });
 
@@ -31,15 +43,15 @@ export default function observe(obj:any, root:KompoElement) {
     obj = new Proxy(obj, {
         deleteProperty: function (target, key) {
             delete target[key];
-            requestAnimationFrame(() => update(root, obj));
+            if(!obj[IGNORE_KEY]) requestAnimationFrame(() => update(root, obj));
             return true;
         },
         set: function (target, key, val) {
-            if (reservedKeys.indexOf(key) === -1) {
+            if (reservedKeys.indexOf(key) > -1 || obj[IGNORE_KEY]) {
+                target[key] = val;
+            } else {
                 target[key] = observe(val, root);
                 requestAnimationFrame(() => update(root, obj));
-            } else {
-                target[key] = val;
             }
 
             return true;
@@ -54,14 +66,35 @@ export function isProxy(obj:any) {
 }
 
 export function ignore(obj:any, ...statefulls:Array<statefull>) {
-    obj[IGNORE_KEY] = statefulls;
+    obj[IGNORE_STATEFULL_KEY] = statefulls;
 }
 
 export function shouldIgnore(obj:any, statefull:statefull) {
-    return obj[IGNORE_KEY].indexOf(statefull) !== -1;
+    return obj[IGNORE_STATEFULL_KEY].indexOf(statefull) !== -1;
 }
 
 export function resetIgnore(obj) {
-    obj[IGNORE_KEY] = [];
+    obj[IGNORE_STATEFULL_KEY] = [];
 }
 
+export function dispatch(Element:KompoElement, cb:(state:state)=>void, silent:boolean):void {
+    if(!cb) return;
+
+    const state = getState(Element);
+    ignoreUpdate(state);
+    cb(state);
+    resetIgnoreUpdate(state);
+    if(!silent) triggerUpdate(state);
+}
+
+export function ignoreUpdate(obj) {
+    obj[IGNORE_KEY] = true;
+}
+
+export function resetIgnoreUpdate(obj) {
+    obj[IGNORE_KEY] = false;
+}
+
+export function triggerUpdate(obj) {
+    obj[TRIGGER_UPDATE_KEY] = true;
+}

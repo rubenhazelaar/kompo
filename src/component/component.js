@@ -224,7 +224,10 @@ function _mount(parent:KompoElement, child:KompoElement|Mountable, selector:?sel
     if (selector) {
         setState(child, selector);
     } else if (child instanceof Mountable) {
-        setState(child.Element, child.selector);
+        selector = child.useParentSelector? parent.kompo.selector: child.selector;
+        if (selector) {
+            setState(child.Element, selector);
+        }
         child = child.Element;
     }
 
@@ -243,7 +246,7 @@ function _mount(parent:KompoElement, child:KompoElement|Mountable, selector:?sel
 function _mountAll(parent:KompoElement, children:Array<KompoElement>|Array<Mountable>, selector:?selector):void {
     // Mount all children ...
     for (let i = 0, l = children.length; i < l; ++i) {
-        _mount(parent, children[i], selector ? selector : undefined);
+        _mount(parent, children[i], selector);
     }
 }
 
@@ -362,15 +365,21 @@ export function getMounts(Element:KompoElement):mounts {
 class Mountable {
     Element:KompoElement;
     selector:selector;
+    useParentSelector:boolean;
 
-    constructor(Element:KompoElement, selector:selector) {
+    constructor({Element, selector, useParentSelector}) {
         this.Element = Element;
         this.selector = selector;
+        this.useParentSelector = useParentSelector;
+
+        if (!this.selector) {
+            this.useParentSelector = true;
+        }
     }
 }
 
-export function mountable(Element:KompoElement, selector:selector):Mountable {
-    return new Mountable(Element, selector)
+export function mountable(options:mountOptions):Mountable {
+    return new Mountable(options)
 }
 
 export function debug(Element:KompoElement, level:?Number) {

@@ -12,6 +12,7 @@ type slotCallback = (Element:KompoElement) => void;
 type selector = (state:state)=>state;
 type constructFn = (props:props)=>void;
 type constructComponent = (props:props)=> KompoElement;
+type mountOptions = { Element:KompoElement, selector:?selector, useParentSelector:?boolean}
 
 declare class KompoElement extends Element {
     kompo: {

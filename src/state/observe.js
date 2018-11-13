@@ -8,7 +8,7 @@ export default function observe(obj:any) {
     const isObj = isObject(obj),
         isArray = Array.isArray(obj);
 
-    if (!isObj && !isArray || obj.hasOwnProperty('__kompo_ignore__')) return obj;
+    if (!isObj && !isArray || obj.hasOwnProperty('__kompo_ignore__') || obj.hasOwnProperty('__kompo_dirty__')) return obj;
 
     Object.defineProperty(obj, '__kompo_dirty__', {
         writable: true,

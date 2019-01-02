@@ -47,11 +47,14 @@ export default function observe(obj:any, root:KompoElement) {
             return true;
         },
         set: function (target, key, val) {
-            if (reservedKeys.indexOf(key) > -1 || obj[IGNORE_KEY]) {
+            if (reservedKeys.indexOf(key) > -1) {
                 target[key] = val;
             } else {
                 target[key] = observe(val, root);
-                requestAnimationFrame(() => update(root, obj));
+                
+                if (!obj[IGNORE_KEY]) {
+                    requestAnimationFrame(() => update(root, obj));
+                }
             }
 
             return true;

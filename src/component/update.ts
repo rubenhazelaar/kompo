@@ -1,6 +1,6 @@
 import {kompoBase, KompoElement, state} from '../types';
 
-import {shouldIgnore, resetIgnore, isProxy } from "../state/store";
+import {isProxy, resetIgnore, shouldIgnore} from "../state/store";
 import {debugModeOn} from "./app";
 
 export default function update(Element: KompoElement, state: state): void {

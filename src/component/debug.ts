@@ -1,6 +1,6 @@
 import {KompoElement} from "../types";
 
-export function debug(el:KompoElement, level?: number) {
+export function debug(el: KompoElement, level?: number) {
     if (!el.hasOwnProperty('kompo')) {
         throw new Error('Is not a KompoElement');
     }

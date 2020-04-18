@@ -1,4 +1,4 @@
-import {constructFn, constructComponent, KompoElement, props} from '../types';
+import {constructComponent, constructFn, KompoElement, props} from '../types';
 
 /**
  * Creates a compnent from an Element
@@ -37,6 +37,6 @@ export function kompo(Element: Element): KompoElement {
     return ke;
 }
 
-export function getProps(Element:KompoElement):props {
+export function getProps(Element: KompoElement): props {
     return Element.kompo.props;
 }

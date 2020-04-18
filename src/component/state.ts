@@ -13,6 +13,6 @@ export function getState(Element: KompoElement): any {
         Element.__kompo__.state
 }
 
-export function getSelector(Element:KompoElement): undefined | selector {
+export function getSelector(Element: KompoElement): undefined | selector {
     return Element.kompo.selector;
 }

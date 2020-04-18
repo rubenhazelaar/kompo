@@ -34,9 +34,12 @@ export type rawRoute = {
 export type rawRouteMap = { [key: string]: rawRoute };
 
 export type componentPromiseCallback = () => KompoPromise<KompoElement>;
-export interface  ComponentPromiseCallback extends componentPromiseCallback {
+
+export interface ComponentPromiseCallback extends componentPromiseCallback {
     kompo: kompoBase;
+
     setSiblingRoutes(routes: routeType[]): void;
+
     getSiblingRoutes(): undefined | routeType[];
 }
 
@@ -121,7 +124,7 @@ export class KompoElement extends Element {
             level: 0
         };
 
-        this.__kompo__= {
+        this.__kompo__ = {
             root: root,
             state: state,
             router: router

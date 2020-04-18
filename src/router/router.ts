@@ -1,11 +1,13 @@
 import {
-    KompoElement,
-    props,
-    router,
-    routeType,
-    KompoPromise,
     ComponentPromiseCallback,
-    routeMap, KompoElementOrPromise, rawRouteMap, rawRoute
+    KompoElement,
+    KompoElementOrPromise,
+    KompoPromise,
+    props,
+    rawRoute,
+    routeMap,
+    router,
+    routeType
 } from "../types";
 
 import mount, {unmount} from '../component/mount';

@@ -9,7 +9,7 @@ import {constructComponent, props} from "../types";
  * @param composeProps
  * @returns {function()}
  */
-export default function compose(constructComponent:constructComponent, composeProps:props = {}):constructComponent {
+export default function compose(constructComponent: constructComponent, composeProps: props = {}): constructComponent {
     return (props = {}) => {
         return constructComponent(Object.assign(composeProps, props));
     };

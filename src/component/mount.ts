@@ -1,4 +1,4 @@
-import {KompoElement, selector, mounts, mountOptions} from "../types";
+import {KompoElement, mounts, selector} from "../types";
 
 import render from './render';
 import {setState} from "./state";

@@ -43,7 +43,6 @@ export interface ComponentPromiseCallback extends componentPromiseCallback {
     getSiblingRoutes(): undefined | routeType[];
 }
 
-// TODO correct definition
 export class KompoPromise<T> extends Promise<T> {
     kompo: kompoBase;
 

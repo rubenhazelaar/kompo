@@ -65,7 +65,7 @@
     "karma-webpack": "1.7.0",
     "mocha": "2.3.4",
     "sinon": "1.17.2",
-    "webpack": "1.12.11"
+    "webpack": "5.94.0"
   },
   "dependencies": {
     "promise": "7.1.1"
